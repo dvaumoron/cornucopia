@@ -1,0 +1,2 @@
+# cornucopia
+go code generator
