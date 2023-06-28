@@ -45,6 +45,8 @@ func main() {
 
 func initCornucopiaGlobals() {
 	starlark.Universe["NewFile"] = starlark.NewBuiltin("NewFile", wrappedNewFile)
+	// TODO a lot of adapter
+
 }
 
 func wrappedNewFile(thread *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -55,5 +57,6 @@ func wrappedNewFile(thread *starlark.Thread, _ *starlark.Builtin, args starlark.
 
 	file := jen.NewFile(packageName.GoString())
 
+	// TODO generic wrapper able of calling methods
 	return nil, nil
 }
