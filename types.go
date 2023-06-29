@@ -23,22 +23,34 @@ import (
 	"go.starlark.net/starlark"
 )
 
-var jenFileWrappedType = makeWrappedType("jenFile",
-	starlark.NewBuiltin("HeaderComment", jenFile_HeaderComment),
-	starlark.NewBuiltin("PackageComment", jenFile_PackageComment),
-	starlark.NewBuiltin("Anon", jenFile_Anon),
-	starlark.NewBuiltin("ImportAlias", jenFile_ImportAlias),
-	starlark.NewBuiltin("ImportName", jenFile_ImportName),
-	starlark.NewBuiltin("ImportNames", jenFile_ImportNames),
-	starlark.NewBuiltin("Comment", jenFile_Comment),
-	starlark.NewBuiltin("Const", jenFile_Const),
-	starlark.NewBuiltin("Var", jenFile_Var),
-	starlark.NewBuiltin("Type", jenFile_Type),
-	starlark.NewBuiltin("Func", jenFile_Func),
-	starlark.NewBuiltin("Save", jenFile_Save),
-)
+var jenFileWrappedType wrappedType
+var jenStatementWrappedType wrappedType
 
-var jenStatementWrappedType = makeWrappedType("jenStatement") // TODO add useful Statement methods
+func init() {
+	jenFileWrappedType = makeWrappedType("jenFile",
+		starlark.NewBuiltin("HeaderComment", jenFile_HeaderComment),
+		starlark.NewBuiltin("PackageComment", jenFile_PackageComment),
+		starlark.NewBuiltin("Anon", jenFile_Anon),
+		starlark.NewBuiltin("ImportAlias", jenFile_ImportAlias),
+		starlark.NewBuiltin("ImportName", jenFile_ImportName),
+		starlark.NewBuiltin("ImportNames", jenFile_ImportNames),
+		starlark.NewBuiltin("Comment", jenFile_Comment),
+		starlark.NewBuiltin("Const", jenFile_Const),
+		starlark.NewBuiltin("Var", jenFile_Var),
+		starlark.NewBuiltin("Type", jenFile_Type),
+		starlark.NewBuiltin("Func", jenFile_Func),
+		starlark.NewBuiltin("Save", jenFile_Save),
+	)
+
+	jenStatementWrappedType = makeWrappedType("jenStatement",
+		starlark.NewBuiltin("Add", jenStatement_Add),
+		starlark.NewBuiltin("Call", jenStatement_Call),
+		starlark.NewBuiltin("Delete", jenStatement_Delete),
+		starlark.NewBuiltin("Op", jenStatement_Op),
+		starlark.NewBuiltin("Params", jenStatement_Params),
+		// TODO add useful Statement methods
+	)
+}
 
 func jenFile_HeaderComment(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var comment string
@@ -165,4 +177,43 @@ func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 		return nil, err
 	}
 	return starlark.None, nil
+}
+
+func jenStatement_Add(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Add(convertToCodeSlice(args)...)
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
+func jenStatement_Call(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Call(convertToCodeSlice(args)...)
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
+func jenStatement_Delete(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var m starlark.Value
+	var key starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "m", &m, "key", &key); err != nil {
+		return nil, err
+	}
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Delete(convertToCode(m), convertToCode(key))
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
+func jenStatement_Op(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var op string
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "op", &op); err != nil {
+		return nil, err
+	}
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Op(op)
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
+func jenStatement_Params(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Params(convertToCodeSlice(args)...)
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }

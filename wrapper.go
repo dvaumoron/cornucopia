@@ -22,6 +22,7 @@ import (
 	"errors"
 	"sort"
 
+	"github.com/dave/jennifer/jen"
 	"go.starlark.net/starlark"
 )
 
@@ -86,4 +87,31 @@ func (w wrapper[T]) Attr(name string) (starlark.Value, error) {
 
 func (w wrapper[T]) AttrNames() []string {
 	return w.wType.methodNames
+}
+
+func convertToGoBuiltin(value starlark.Value) any {
+	switch casted := value.(type) {
+	case starlark.Bool:
+		return bool(casted)
+	case starlark.Int:
+		res, ok := casted.Int64()
+		if ok {
+			return res
+		}
+	case starlark.Float:
+		return float64(casted)
+	case starlark.String:
+		return string(casted)
+	}
+	return nil
+}
+
+func convertToCode(value starlark.Value) jen.Code {
+	// TODO
+	return nil
+}
+
+func convertToCodeSlice(args starlark.Tuple) []jen.Code {
+	// TODO
+	return nil
 }
