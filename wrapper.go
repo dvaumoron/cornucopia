@@ -112,6 +112,9 @@ func convertToCode(value starlark.Value) jen.Code {
 }
 
 func convertToCodeSlice(args starlark.Tuple) []jen.Code {
-	// TODO
-	return nil
+	res := make([]jen.Code, 0, len(args))
+	for _, arg := range args {
+		res = append(res, convertToCode(arg))
+	}
+	return res
 }
