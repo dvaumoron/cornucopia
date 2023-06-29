@@ -118,3 +118,14 @@ func convertToCodeSlice(args starlark.Tuple) []jen.Code {
 	}
 	return res
 }
+
+func convertToStringSlice(args starlark.Tuple) []string {
+	res := make([]string, 0, len(args))
+	for _, arg := range args {
+		s, ok := starlark.AsString(arg)
+		if !ok {
+			res = append(res, s)
+		}
+	}
+	return res
+}

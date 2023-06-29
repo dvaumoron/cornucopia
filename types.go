@@ -83,22 +83,8 @@ func jenFile_Comment(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tupl
 }
 
 func jenFile_Anon(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var pathIt starlark.Iterable
-	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "paths", &pathIt); err != nil {
-		return nil, err
-	}
-	it := pathIt.Iterate()
-	defer it.Done()
-	var paths []string
-	var value starlark.Value
-	for it.Next(&value) {
-		path, ok := starlark.AsString(value)
-		if ok {
-			paths = append(paths, path)
-		}
-	}
 	recv := b.Receiver().(wrapper[*jen.File])
-	recv.inner.Anon(paths...)
+	recv.inner.Anon(convertToStringSlice(args)...)
 	return starlark.None, nil
 }
 
