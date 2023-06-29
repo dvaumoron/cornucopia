@@ -29,6 +29,10 @@ import (
 
 func main() {
 	args := os.Args
+	if len(args) == 0 {
+		fmt.Println("Usage:\n  cornucopia [filename]")
+		return
+	}
 
 	load := repl.MakeLoad() // TODO check the utility of a better version
 	thread := &starlark.Thread{Name: "cornucopia", Load: load}
@@ -56,7 +60,5 @@ func wrappedNewFile(thread *starlark.Thread, _ *starlark.Builtin, args starlark.
 	}
 
 	file := jen.NewFile(packageName.GoString())
-
-	// TODO generic wrapper able of calling methods
-	return nil, nil
+	return wrapper[*jen.File]{inner: file, wType: &jenFileWrappedType}, nil
 }
