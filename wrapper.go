@@ -191,3 +191,17 @@ func convertToMapString(items []starlark.Tuple) map[string]string {
 	}
 	return mapString
 }
+
+func convertToDictOrCodeSlice(args starlark.Tuple) []jen.Code {
+	if len(args) == 1 {
+		casted, ok := args[0].(*starlark.Dict)
+		if ok {
+			dict := jen.Dict{}
+			for _, item := range casted.Items() {
+				dict[convertToCode(item[0])] = convertToCode(item[1])
+			}
+			return []jen.Code{dict}
+		}
+	}
+	return convertToCodeSlice(args)
+}

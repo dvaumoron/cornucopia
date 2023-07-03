@@ -49,6 +49,7 @@ func init() {
 		starlark.NewBuiltin("Assert", jenStatement_Assert),
 		starlark.NewBuiltin("Block", jenStatement_Block),
 		starlark.NewBuiltin("Bool", jenStatement_Bool),
+		starlark.NewBuiltin("Byte", jenStatement_Byte),
 		starlark.NewBuiltin("Call", jenStatement_Call),
 		starlark.NewBuiltin("Chan", jenStatement_Chan),
 		starlark.NewBuiltin("Clone", jenStatement_Clone),
@@ -74,6 +75,7 @@ func init() {
 		starlark.NewBuiltin("Int32", jenStatement_Int32),
 		starlark.NewBuiltin("Int64", jenStatement_Int64),
 		starlark.NewBuiltin("Interface", jenStatement_Interface),
+		starlark.NewBuiltin("Iota", jenStatement_Iota),
 		starlark.NewBuiltin("Lit", jenStatement_Lit),
 		starlark.NewBuiltin("LitByte", jenStatement_LitByte),
 		starlark.NewBuiltin("LitRune", jenStatement_LitRune),
@@ -85,6 +87,7 @@ func init() {
 		starlark.NewBuiltin("Qual", jenStatement_Qual),
 		starlark.NewBuiltin("Real", jenStatement_Real),
 		starlark.NewBuiltin("Recover", jenStatement_Recover),
+		starlark.NewBuiltin("Rune", jenStatement_Rune),
 		starlark.NewBuiltin("String", jenStatement_String),
 		starlark.NewBuiltin("Struct", jenStatement_Struct),
 		starlark.NewBuiltin("Tag", jenStatement_Tag),
@@ -94,8 +97,8 @@ func init() {
 		starlark.NewBuiltin("Uint16", jenStatement_Uint16),
 		starlark.NewBuiltin("Uint32", jenStatement_Uint32),
 		starlark.NewBuiltin("Uint64", jenStatement_Uint64),
+		starlark.NewBuiltin("Uintptr", jenStatement_Uintptr),
 		starlark.NewBuiltin("Values", jenStatement_Values),
-		// TODO add useful Statement methods
 	)
 }
 
@@ -240,6 +243,12 @@ func jenStatement_Block(_ *starlark.Thread, b *starlark.Builtin, args starlark.T
 func jenStatement_Bool(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.Bool()
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
+func jenStatement_Byte(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Byte()
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
@@ -414,6 +423,12 @@ func jenStatement_Interface(_ *starlark.Thread, b *starlark.Builtin, args starla
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
+func jenStatement_Iota(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Iota()
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
 func jenStatement_Lit(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var value starlark.Value
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
@@ -509,6 +524,12 @@ func jenStatement_Recover(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tu
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
+func jenStatement_Rune(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Rune()
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
 func jenStatement_String(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.String()
@@ -563,23 +584,14 @@ func jenStatement_Uint64(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tup
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
+func jenStatement_Uintptr(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Uintptr()
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
 func jenStatement_Values(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	recv := b.Receiver().(wrapper[*jen.Statement])
-	var stmt *jen.Statement
-	ok := false
-	if len(args) == 1 {
-		var casted *starlark.Dict
-		casted, ok = args[0].(*starlark.Dict)
-		if ok {
-			dict := jen.Dict{}
-			for _, item := range casted.Items() {
-				dict[convertToCode(item[0])] = convertToCode(item[1])
-			}
-			stmt = recv.inner.Values(dict)
-		}
-	}
-	if !ok {
-		stmt = recv.inner.Values(convertToCodeSlice(args)...)
-	}
+	stmt := recv.inner.Values(convertToDictOrCodeSlice(args)...)
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }

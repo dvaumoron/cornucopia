@@ -61,6 +61,7 @@ func initCornucopiaGlobals() {
 	addGlobals("Int32", wrappedInt32)
 	addGlobals("Int64", wrappedInt64)
 	addGlobals("Interface", wrappedInterface)
+	addGlobals("Iota", wrappedIota)
 	addGlobals("Line", wrappedLine)
 	addGlobals("List", wrappedList)
 	addGlobals("Lit", wrappedLit)
@@ -84,7 +85,9 @@ func initCornucopiaGlobals() {
 	addGlobals("Uint16", wrappedUint16)
 	addGlobals("Uint32", wrappedUint32)
 	addGlobals("Uint64", wrappedUint64)
+	addGlobals("Uintptr", wrappedUintptr)
 	addGlobals("Var", wrappedVar)
+	addGlobals("Values", wrappedValues)
 }
 
 func addGlobals(name string, wrapped func(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error)) {
@@ -289,6 +292,10 @@ func wrappedInterface(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tup
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
+func wrappedIota(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{inner: jen.Iota(), wType: &jenStatementWrappedType}, nil
+}
+
 func wrappedLine(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{inner: jen.Line(), wType: &jenStatementWrappedType}, nil
 }
@@ -425,6 +432,15 @@ func wrappedUint64(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ 
 	return wrapper[*jen.Statement]{inner: jen.Uint64(), wType: &jenStatementWrappedType}, nil
 }
 
+func wrappedUintptr(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{inner: jen.Uintptr(), wType: &jenStatementWrappedType}, nil
+}
+
 func wrappedVar(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{inner: jen.Var(), wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedValues(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	stmt := jen.Values(convertToDictOrCodeSlice(args)...)
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
