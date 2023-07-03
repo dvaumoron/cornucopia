@@ -52,6 +52,7 @@ func initCornucopiaGlobals() {
 	addGlobals("Go", wrappedGo)
 	addGlobals("Goto", wrappedGoto)
 	addGlobals("Id", wrappedId)
+	addGlobals("If", wrappedIf)
 	addGlobals("Imag", wrappedImag)
 	addGlobals("Index", wrappedIndex)
 	addGlobals("Int", wrappedInt)
@@ -242,6 +243,11 @@ func wrappedId(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwa
 	}
 	id := jen.Id(name)
 	return wrapper[*jen.Statement]{inner: id, wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedIf(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	stmt := jen.If(convertToCodeSlice(args)...)
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedImag(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
