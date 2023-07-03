@@ -179,3 +179,15 @@ func convertToStringSlice(args starlark.Tuple) []string {
 	}
 	return res
 }
+
+func convertToMapString(items []starlark.Tuple) map[string]string {
+	mapString := make(map[string]string, len(items))
+	for _, item := range items {
+		key, ok := starlark.AsString(item[0])
+		value, ok2 := starlark.AsString(item[1])
+		if ok && ok2 {
+			mapString[key] = value
+		}
+	}
+	return mapString
+}
