@@ -27,9 +27,14 @@ import (
 )
 
 // check interface compliance
-var _ starlark.HasAttrs = wrapper[any]{}
+var _ starlark.HasAttrs = wrapper[jen.Code]{}
+var _ coder = wrapper[jen.Code]{}
 
 var errUnhashable = errors.New("unhashable builtin type")
+
+type coder interface {
+	code() jen.Code
+}
 
 type wrappedType struct {
 	name        string
@@ -52,7 +57,7 @@ func makeWrappedType(name string, methods ...*starlark.Builtin) wrappedType {
 	return wrappedType{name: name, methods: methodsMap, methodNames: methodNames}
 }
 
-type wrapper[T any] struct {
+type wrapper[T jen.Code] struct {
 	inner T
 	wType *wrappedType
 }
@@ -89,6 +94,10 @@ func (w wrapper[T]) AttrNames() []string {
 	return w.wType.methodNames
 }
 
+func (w wrapper[T]) code() jen.Code {
+	return w.inner
+}
+
 func convertToGoBuiltin(value starlark.Value) any {
 	switch casted := value.(type) {
 	case starlark.Bool:
@@ -107,8 +116,11 @@ func convertToGoBuiltin(value starlark.Value) any {
 }
 
 func convertToCode(value starlark.Value) jen.Code {
-	// TODO
-	return nil
+	casted, ok := value.(coder)
+	if !ok {
+		return jen.Lit(convertToGoBuiltin(value))
+	}
+	return casted.code()
 }
 
 func convertToCodeSlice(args starlark.Tuple) []jen.Code {
