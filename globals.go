@@ -86,6 +86,7 @@ func initCornucopiaGlobals() {
 	addGlobals("Uint32", wrappedUint32)
 	addGlobals("Uint64", wrappedUint64)
 	addGlobals("Uintptr", wrappedUintptr)
+	addGlobals("Union", wrappedUnion)
 	addGlobals("Var", wrappedVar)
 	addGlobals("Values", wrappedValues)
 }
@@ -434,6 +435,11 @@ func wrappedUint64(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ 
 
 func wrappedUintptr(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{inner: jen.Uintptr(), wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedUnion(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	stmt := jen.Union(convertToCodeSlice(args)...)
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedVar(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
