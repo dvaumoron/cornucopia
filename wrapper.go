@@ -127,6 +127,7 @@ func convertToGoBuiltin(value starlark.Value) any {
 	}
 	return nil
 }
+
 func convertToGoByte(value starlark.Value) byte {
 	casted, ok := value.(starlark.Int)
 	if ok {
