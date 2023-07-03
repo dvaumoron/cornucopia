@@ -48,32 +48,42 @@ func main() {
 }
 
 func initCornucopiaGlobals() {
-	starlark.Universe["NewFile"] = starlark.NewBuiltin("NewFile", wrappedNewFile)
-	starlark.Universe["Bool"] = starlark.NewBuiltin("Bool", wrappedBool)
-	starlark.Universe["Case"] = starlark.NewBuiltin("Case", wrappedCase)
-	starlark.Universe["Complex64"] = starlark.NewBuiltin("Complex64", wrappedComplex64)
-	starlark.Universe["Complex128"] = starlark.NewBuiltin("Complex64", wrappedComplex128)
-	starlark.Universe["Empty"] = starlark.NewBuiltin("Empty", wrappedEmpty)
-	starlark.Universe["Fallthrough"] = starlark.NewBuiltin("Id", wrappedFallthrough)
-	starlark.Universe["Float32"] = starlark.NewBuiltin("Float32", wrappedFloat32)
-	starlark.Universe["Float64"] = starlark.NewBuiltin("Float64", wrappedFloat64)
-	starlark.Universe["Id"] = starlark.NewBuiltin("Id", wrappedId)
-	starlark.Universe["Int"] = starlark.NewBuiltin("Int", wrappedInt)
-	starlark.Universe["Int8"] = starlark.NewBuiltin("Int8", wrappedInt8)
-	starlark.Universe["Int16"] = starlark.NewBuiltin("Int16", wrappedInt16)
-	starlark.Universe["Int32"] = starlark.NewBuiltin("Int32", wrappedInt32)
-	starlark.Universe["Int64"] = starlark.NewBuiltin("Int64", wrappedInt64)
-	starlark.Universe["Qual"] = starlark.NewBuiltin("Qual", wrappedQual)
-	starlark.Universe["Lit"] = starlark.NewBuiltin("Lit", wrappedLit)
-	starlark.Universe["Nil"] = starlark.NewBuiltin("Nil", wrappedNil)
-	starlark.Universe["Return"] = starlark.NewBuiltin("Return", wrappedReturn)
-	starlark.Universe["String"] = starlark.NewBuiltin("Uint", wrappedString)
-	starlark.Universe["Uint"] = starlark.NewBuiltin("Uint", wrappedUint)
-	starlark.Universe["Uint8"] = starlark.NewBuiltin("Uint8", wrappedUint8)
-	starlark.Universe["Uint16"] = starlark.NewBuiltin("Uint16", wrappedUint16)
-	starlark.Universe["Uint32"] = starlark.NewBuiltin("Uint32", wrappedUint32)
-	starlark.Universe["Uint64"] = starlark.NewBuiltin("Uint64", wrappedUint64)
-	// TODO a lot of adapter
+	addGlobals("NewFile", wrappedNewFile)
+	addGlobals("Bool", wrappedBool)
+	addGlobals("Case", wrappedCase)
+	addGlobals("Chan", wrappedChan)
+	addGlobals("Comment", wrappedComment)
+	addGlobals("Complex64", wrappedComplex64)
+	addGlobals("Complex128", wrappedComplex128)
+	addGlobals("Default", wrappedDefault)
+	addGlobals("Empty", wrappedEmpty)
+	addGlobals("Fallthrough", wrappedFallthrough)
+	addGlobals("Float32", wrappedFloat32)
+	addGlobals("Float64", wrappedFloat64)
+	addGlobals("Id", wrappedId)
+	addGlobals("Int", wrappedInt)
+	addGlobals("Int8", wrappedInt8)
+	addGlobals("Int16", wrappedInt16)
+	addGlobals("Int32", wrappedInt32)
+	addGlobals("Int64", wrappedInt64)
+	addGlobals("Parens", wrappedParens)
+	addGlobals("Qual", wrappedQual)
+	addGlobals("Lit", wrappedLit)
+	addGlobals("LitByte", wrappedLitByte)
+	addGlobals("LitRune", wrappedLitRune)
+	addGlobals("Nil", wrappedNil)
+	addGlobals("Op", wrappedOp)
+	addGlobals("Return", wrappedReturn)
+	addGlobals("String", wrappedString)
+	addGlobals("Uint", wrappedUint)
+	addGlobals("Uint8", wrappedUint8)
+	addGlobals("Uint16", wrappedUint16)
+	addGlobals("Uint32", wrappedUint32)
+	addGlobals("Uint64", wrappedUint64)
+}
+
+func addGlobals(name string, wrapped func(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error)) {
+	starlark.Universe[name] = starlark.NewBuiltin(name, wrapped)
 }
 
 func wrappedNewFile(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -95,12 +105,29 @@ func wrappedCase(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, _
 	return wrapper[*jen.Statement]{inner: case_, wType: &jenStatementWrappedType}, nil
 }
 
+func wrappedChan(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{inner: jen.Chan(), wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedComment(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value string
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "comment", &value); err != nil {
+		return nil, err
+	}
+	jen.Comment(value)
+	return starlark.None, nil
+}
+
 func wrappedComplex64(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{inner: jen.Complex64(), wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedComplex128(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{inner: jen.Complex128(), wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedDefault(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{inner: jen.Default(), wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedEmpty(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
@@ -124,7 +151,6 @@ func wrappedId(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwa
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "name", &name); err != nil {
 		return nil, err
 	}
-
 	id := jen.Id(name)
 	return wrapper[*jen.Statement]{inner: id, wType: &jenStatementWrappedType}, nil
 }
@@ -149,6 +175,15 @@ func wrappedInt64(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ [
 	return wrapper[*jen.Statement]{inner: jen.Int64(), wType: &jenStatementWrappedType}, nil
 }
 
+func wrappedParens(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var item starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "item", &item); err != nil {
+		return nil, err
+	}
+	parens := jen.Parens(convertToCode(item))
+	return wrapper[*jen.Statement]{inner: parens, wType: &jenStatementWrappedType}, nil
+}
+
 func wrappedQual(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var path string
 	var name string
@@ -168,8 +203,35 @@ func wrappedLit(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kw
 	return wrapper[*jen.Statement]{inner: lit, wType: &jenStatementWrappedType}, nil
 }
 
+func wrappedLitByte(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
+		return nil, err
+	}
+	lit := jen.LitByte(convertToGoByte(value))
+	return wrapper[*jen.Statement]{inner: lit, wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedLitRune(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
+		return nil, err
+	}
+	lit := jen.LitRune(convertToGoRune(value))
+	return wrapper[*jen.Statement]{inner: lit, wType: &jenStatementWrappedType}, nil
+}
+
 func wrappedNil(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{inner: jen.Nil(), wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedOp(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value string
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "op", &value); err != nil {
+		return nil, err
+	}
+	op := jen.Op(value)
+	return wrapper[*jen.Statement]{inner: op, wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedReturn(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {

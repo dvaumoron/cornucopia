@@ -20,7 +20,9 @@ package main
 
 import (
 	"errors"
+	"io"
 	"sort"
+	"strings"
 
 	"github.com/dave/jennifer/jen"
 	"go.starlark.net/starlark"
@@ -34,6 +36,10 @@ var errUnhashable = errors.New("unhashable builtin type")
 
 type coder interface {
 	code() jen.Code
+}
+
+type renderer interface {
+	Render(writer io.Writer) error
 }
 
 type wrappedType struct {
@@ -63,7 +69,14 @@ type wrapper[T jen.Code] struct {
 }
 
 func (w wrapper[T]) String() string {
-	return "todo"
+	casted, ok := w.code().(renderer)
+	if ok {
+		var buffer strings.Builder
+		if err := casted.Render(&buffer); err == nil {
+			return buffer.String()
+		}
+	}
+	return ""
 }
 
 func (w wrapper[T]) Type() string {
@@ -113,6 +126,31 @@ func convertToGoBuiltin(value starlark.Value) any {
 		return string(casted)
 	}
 	return nil
+}
+func convertToGoByte(value starlark.Value) byte {
+	casted, ok := value.(starlark.Int)
+	if ok {
+		res, ok2 := casted.Int64()
+		if ok2 {
+			return byte(res)
+		}
+	}
+	return 0
+}
+
+func convertToGoRune(value starlark.Value) rune {
+	switch casted := value.(type) {
+	case starlark.Int:
+		res, ok := casted.Int64()
+		if ok {
+			return rune(res)
+		}
+	case starlark.String:
+		for _, r := range string(casted) {
+			return r
+		}
+	}
+	return 0
 }
 
 func convertToCode(value starlark.Value) jen.Code {
