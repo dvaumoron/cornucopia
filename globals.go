@@ -48,6 +48,7 @@ func initCornucopiaGlobals() {
 	addGlobals("Fallthrough", wrappedFallthrough)
 	addGlobals("Float32", wrappedFloat32)
 	addGlobals("Float64", wrappedFloat64)
+	addGlobals("For", wrappedFor)
 	addGlobals("Go", wrappedGo)
 	addGlobals("Goto", wrappedGoto)
 	addGlobals("Id", wrappedId)
@@ -219,6 +220,11 @@ func wrappedFloat32(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _
 
 func wrappedFloat64(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{inner: jen.Float64(), wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedFor(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	stmt := jen.For(convertToCodeSlice(args)...)
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedGo(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {

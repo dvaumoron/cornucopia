@@ -64,7 +64,6 @@ func init() {
 		starlark.NewBuiltin("Error", jenStatement_Error),
 		starlark.NewBuiltin("Float32", jenStatement_Float32),
 		starlark.NewBuiltin("Float64", jenStatement_Float64),
-		starlark.NewBuiltin("For", jenStatement_For),
 		starlark.NewBuiltin("Func", jenStatement_Func),
 		starlark.NewBuiltin("Id", jenStatement_Id),
 		starlark.NewBuiltin("Imag", jenStatement_Imag),
@@ -344,12 +343,6 @@ func jenStatement_Float32(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tu
 func jenStatement_Float64(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.Float64()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_For(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.For(convertToCodeSlice(args)...)
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
