@@ -1,0 +1,4 @@
+
+f = NewFile("main")
+f.Func().Id("main").Params().Block(Qual("fmt", "Println").Call("Hello world !"))
+f.Save("hello.go")
