@@ -28,7 +28,7 @@ import (
 
 func main() {
 	args := os.Args
-	if len(args) == 0 {
+	if len(args) < 2 {
 		fmt.Println("Usage:\n  cornucopia [filename]")
 		return
 	}
@@ -37,7 +37,7 @@ func main() {
 	thread := &starlark.Thread{Name: "cornucopia", Load: load}
 	initCornucopiaGlobals()
 
-	_, err := starlark.ExecFile(thread, args[0], nil, nil)
+	_, err := starlark.ExecFile(thread, args[1], nil, nil)
 	if err != nil {
 		fmt.Println("An error occured :", err)
 		os.Exit(1)
