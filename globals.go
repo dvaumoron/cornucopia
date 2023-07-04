@@ -30,6 +30,7 @@ func initCornucopiaGlobals() {
 	addGlobals("Bool", wrappedBool)
 	addGlobals("Break", wrappedBreak)
 	addGlobals("Byte", wrappedByte)
+	addGlobals("Cap", wrappedCap)
 	addGlobals("Case", wrappedCase)
 	addGlobals("Chan", wrappedChan)
 	addGlobals("Close", wrappedClose)
@@ -62,6 +63,7 @@ func initCornucopiaGlobals() {
 	addGlobals("Int64", wrappedInt64)
 	addGlobals("Interface", wrappedInterface)
 	addGlobals("Iota", wrappedIota)
+	addGlobals("Len", wrappedLen)
 	addGlobals("Line", wrappedLine)
 	addGlobals("List", wrappedList)
 	addGlobals("Lit", wrappedLit)
@@ -124,6 +126,15 @@ func wrappedBreak(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ [
 
 func wrappedByte(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{inner: jen.Byte(), wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedCap(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "c", &value); err != nil {
+		return nil, err
+	}
+	stmt := jen.Cap(convertToCode(value))
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedCase(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
@@ -295,6 +306,15 @@ func wrappedInterface(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tup
 
 func wrappedIota(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{inner: jen.Iota(), wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedLen(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "c", &value); err != nil {
+		return nil, err
+	}
+	stmt := jen.Len(convertToCode(value))
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedLine(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
