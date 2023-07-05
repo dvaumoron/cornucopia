@@ -26,6 +26,8 @@ basicFunctions = [
     "Nil", "Null", "Recover", "Rune", "Select", "String", "Uint", "Uint8", "Uint16", "Uint32", "Uint64", "Uintptr", "Var",
 ]
 
+varargsFunctions = ["Append", "Case", "For", "If", "Index", "Interface", "List", "Make", "Return", "Switch", "Union"]
+
 basicFileMethods = ["Const", "Var", "Type", "Func"]
 
 basicStatementMethods = [
@@ -33,6 +35,8 @@ basicStatementMethods = [
     "Func", "Iota", "Int", "Int8", "Int16", "Int32", "Int64", "Nil", "Range", "Recover", "Rune", "String",
     "Uint", "Uint8", "Uint16", "Uint32", "Uint64", "Uintptr"
 ]
+
+varargsStatementMethods = ["Add", "Append", "Block", "Call", "Defs", "Index", "Interface", "Make", "Params", "Struct", "Types"]
 
 JEN = "github.com/dave/jennifer/jen"
 STARLARK = "go.starlark.net/starlark"
@@ -68,11 +72,26 @@ def basicFunction(f, functionName):
     )
     f.Line()
 
+CONVERT_ARGS_TO_CODE_SLICE = Id("convertToCodeSlice").Call(Id("args")).Op("...")
+
+def varargsFunction(f, functionName):
+    newStarlarkBuiltinFunc(f, "wrapped" + functionName, "_", "_", "args", "_").Block(
+        returnWrappedStatement(Qual(JEN, functionName).Call(CONVERT_ARGS_TO_CODE_SLICE)),
+    )
+    f.Line()
+
+def assertReceiver(typeName, methodName):
+    return Id("b").Dot("Receiver").Call().Assert(Id("wrapper").Types(Op("*").Qual(JEN, typeName))).Dot("inner").Dot(methodName)
+
 def basicMethod(f, typeName, methodName):
     newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "_", "_").Block(
-        Id("recv").Op(":=").Id("b").Dot("Receiver").Call().Assert(Id("wrapper").Types(Op("*").Qual(JEN, typeName))),
-        Id("stmt").Op(":=").Id("recv").Dot("inner").Dot(methodName).Call(),
-        returnWrappedStatement(Id("stmt")),
+        returnWrappedStatement(assertReceiver(typeName, methodName).Call()),
+    )
+    f.Line()
+
+def varargsMethod(f, typeName, methodName):
+    newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "args", "_").Block(
+        returnWrappedStatement(assertReceiver(typeName, methodName).Call(CONVERT_ARGS_TO_CODE_SLICE)),
     )
     f.Line()
 
@@ -99,11 +118,17 @@ def makeWraping():
     for f in basicFunctions:
         basicFunction(wrapping, f)
 
+    for f in varargsFunctions:
+        varargsFunction(wrapping, f)
+
     for m in basicFileMethods:
         basicMethod(wrapping, "File", m)
 
     for m in basicStatementMethods:
         basicMethod(wrapping, "Statement", m)
+
+    for m in varargsStatementMethods:
+        varargsMethod(wrapping, "Statement", m)
 
     wrapping.Save("wrapping.go")
 

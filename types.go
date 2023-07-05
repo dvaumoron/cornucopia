@@ -122,18 +122,6 @@ func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 	return starlark.None, nil
 }
 
-func jenStatement_Add(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Add(convertToCodeSlice(args)...)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Append(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Append(convertToCodeSlice(args)...)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
 func jenStatement_Assert(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var type_ starlark.Value
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "type", &type_); err != nil {
@@ -141,18 +129,6 @@ func jenStatement_Assert(_ *starlark.Thread, b *starlark.Builtin, args starlark.
 	}
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.Assert(convertToCode(type_))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Block(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Block(convertToCodeSlice(args)...)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Call(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Call(convertToCodeSlice(args)...)
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
@@ -187,12 +163,6 @@ func jenStatement_Complex(_ *starlark.Thread, b *starlark.Builtin, args starlark
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
-func jenStatement_Defs(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Defs(convertToCodeSlice(args)...)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
 func jenStatement_Dot(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var name string
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "name", &name); err != nil {
@@ -220,18 +190,6 @@ func jenStatement_Imag(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tu
 	}
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.Imag(convertToCode(value))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Index(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Index(convertToCodeSlice(args)...)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Interface(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Interface(convertToCodeSlice(args)...)
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
@@ -275,12 +233,6 @@ func jenStatement_LitRune(_ *starlark.Thread, b *starlark.Builtin, args starlark
 	return wrapper[*jen.Statement]{inner: lit, wType: &jenStatementWrappedType}, nil
 }
 
-func jenStatement_Make(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Make(convertToCodeSlice(args)...)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
 func jenStatement_Map(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var type_ starlark.Value
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "type", &type_); err != nil {
@@ -298,12 +250,6 @@ func jenStatement_Op(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tupl
 	}
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.Op(op)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Params(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Params(convertToCodeSlice(args)...)
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
@@ -338,21 +284,9 @@ func jenStatement_Real(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tu
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
-func jenStatement_Struct(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Struct(convertToCodeSlice(args)...)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
 func jenStatement_Tag(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.Tag(convertToMapString(kwargs))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Types(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Types(convertToCodeSlice(args)...)
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
