@@ -43,5 +43,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("Successful")
+	if len(generatedFilenames) == 0 {
+		fmt.Println("Successful without file generation")
+	} else {
+		fmt.Println("Successful, the following file have been generated :")
+		for _, filename := range generatedFilenames {
+			fmt.Println(filename)
+		}
+	}
 }

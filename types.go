@@ -29,6 +29,9 @@ import (
 var jenFileWrappedType wrappedType
 var jenStatementWrappedType wrappedType
 
+// mutex not needed
+var generatedFilenames []string
+
 func jenFile_HeaderComment(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var comment string
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "comment", &comment); err != nil {
@@ -119,6 +122,8 @@ func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 	if err := recv.inner.Save(filename); err != nil {
 		return nil, err
 	}
+
+	generatedFilenames = append(generatedFilenames, filename)
 	return starlark.None, nil
 }
 
