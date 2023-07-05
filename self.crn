@@ -11,8 +11,27 @@ globalNames = [
     "Goto", "If", "Line", "List", "Null", "Return", "Select", "Switch", "Union", "Var",
 ]
 
+jenFileMethodNames = [
+    "HeaderComment", "PackageComment", "Anon", "ImportAlias", "ImportName","ImportNames", "Comment",
+    "Const", "Var", "Type", "Func", "Line", "Save",
+]
+
 jenStatementMethodNames = [
     "Add", "Assert", "Block", "Call", "Clone", "Defs", "Dot", "Else", "Params", "Range", "Struct", "Tag", "Types",
+]
+
+basicFunctions = [
+    "Any", "Bool", "Break", "Byte", "Chan", "Comparable", "Complex64", "Complex128", "Continue", "Default", "Defer", "Empty", "Err",
+    "Error", "Fallthrough", "Float32", "Float64", "Func", "Go", "Goto", "Int", "Int8", "Int16", "Int32", "Int64", "Iota", "Line",
+    "Nil", "Null", "Recover", "Rune", "Select", "String", "Uint", "Uint8", "Uint16", "Uint32", "Uint64", "Uintptr", "Var",
+]
+
+basicFileMethods = ["Const", "Var", "Type", "Func"]
+
+basicStatementMethods = [
+    "Any", "Bool", "Byte", "Chan", "Clone", "Comparable", "Complex64", "Complex128", "Else", "Err", "Error", "Float32", "Float64",
+    "Func", "Iota", "Int", "Int8", "Int16", "Int32", "Int64", "Nil", "Range", "Recover", "Rune", "String",
+    "Uint", "Uint8", "Uint16", "Uint32", "Uint64", "Uintptr"
 ]
 
 JEN = "github.com/dave/jennifer/jen"
@@ -23,8 +42,11 @@ def newFileWithComment():
     f.HeaderComment("This file is generated - do not edit.")
     return f
 
+def wrapFunc(name, functionName):
+    return Qual(STARLARK, "NewBuiltin").Call(name, Id(functionName))
+
 def addGlobals(name):
-    return Qual(STARLARK, "Universe").Index(name).Op("=").Qual(STARLARK, "NewBuiltin").Call(name, Id("wrapped" + name))
+    return Qual(STARLARK, "Universe").Index(name).Op("=").Add(wrapFunc(name, "wrapped" + name))
 
 def newStarlarkBuiltinFunc(f, name, param, param2, param3, param4):
     return f.Func().Id(name).Params(
@@ -54,108 +76,36 @@ def basicMethod(f, typeName, methodName):
     )
     f.Line()
 
-def newMethod(typeName, name):
-    return Qual(STARLARK, "NewBuiltin").Call(name, Id(typeName + "_" + name))
-
 def registerType(name, methodNames):
-    return Id(name+"WrappedType").Op("=").Id("makeWrappedType").Call(name, *[newMethod(name, methodName) for methodName in methodNames])
+    return Id(name+"WrappedType").Op("=").Id("makeWrappedType").Call(name, *[wrapFunc(methodName, name + "_" + methodName) for methodName in methodNames])
 
-linking = newFileWithComment()
+def makeLinking():
+    linking = newFileWithComment()
 
-linking.Func().Id("init").Params().Block(
-    registerType("jenFile", [
-        "HeaderComment", "PackageComment",
-        "Anon", "ImportAlias", "ImportName","ImportNames",
-        "Comment", "Const", "Var", "Type", "Func", 
-        "Line", "Save",
-    ]),
-    registerType("jenStatement", sorted(jenStatementMethodNames + commonNames)),
-)
+    linking.Func().Id("init").Params().Block(
+        registerType("jenFile", jenFileMethodNames),
+        registerType("jenStatement", sorted(jenStatementMethodNames + commonNames)),
+    )   
 
-linking.Line()
+    linking.Line()
 
-linking.Func().Id("initCornucopiaGlobals").Params().Block(*[addGlobals(name) for name in sorted(globalNames + commonNames)])
+    linking.Func().Id("initCornucopiaGlobals").Params().Block(*[addGlobals(name) for name in sorted(globalNames + commonNames)])
 
-linking.Save("linking.go")
+    linking.Save("linking.go")
 
-wrapping = newFileWithComment()
+def makeWraping():
+    wrapping = newFileWithComment()
 
-basicFunction(wrapping, "Any")
-basicFunction(wrapping, "Bool")
-basicFunction(wrapping, "Break")
-basicFunction(wrapping, "Byte")
-basicFunction(wrapping, "Chan")
-basicFunction(wrapping, "Comparable")
-basicFunction(wrapping, "Complex64")
-basicFunction(wrapping, "Complex128")
-basicFunction(wrapping, "Continue")
-basicFunction(wrapping, "Default")
-basicFunction(wrapping, "Defer")
-basicFunction(wrapping, "Empty")
-basicFunction(wrapping, "Err")
-basicFunction(wrapping, "Error")
-basicFunction(wrapping, "Fallthrough")
-basicFunction(wrapping, "Float32")
-basicFunction(wrapping, "Float64")
-basicFunction(wrapping, "Func")
-basicFunction(wrapping, "Go")
-basicFunction(wrapping, "Goto")
-basicFunction(wrapping, "Int")
-basicFunction(wrapping, "Int8")
-basicFunction(wrapping, "Int16")
-basicFunction(wrapping, "Int32")
-basicFunction(wrapping, "Int64")
-basicFunction(wrapping, "Iota")
-basicFunction(wrapping, "Line")
-basicFunction(wrapping, "Nil")
-basicFunction(wrapping, "Null")
-basicFunction(wrapping, "Recover")
-basicFunction(wrapping, "Rune")
-basicFunction(wrapping, "Select")
-basicFunction(wrapping, "String")
-basicFunction(wrapping, "Uint")
-basicFunction(wrapping, "Uint8")
-basicFunction(wrapping, "Uint16")
-basicFunction(wrapping, "Uint32")
-basicFunction(wrapping, "Uint64")
-basicFunction(wrapping, "Uintptr")
-basicFunction(wrapping, "Var")
+    for f in basicFunctions:
+        basicFunction(wrapping, f)
 
-basicMethod(wrapping, "File", "Const")
-basicMethod(wrapping, "File", "Var")
-basicMethod(wrapping, "File", "Type")
-basicMethod(wrapping, "File", "Func")
+    for m in basicFileMethods:
+        basicMethod(wrapping, "File", m)
 
-basicMethod(wrapping, "Statement", "Any")
-basicMethod(wrapping, "Statement", "Bool")
-basicMethod(wrapping, "Statement", "Byte")
-basicMethod(wrapping, "Statement", "Chan")
-basicMethod(wrapping, "Statement", "Clone")
-basicMethod(wrapping, "Statement", "Comparable")
-basicMethod(wrapping, "Statement", "Complex64")
-basicMethod(wrapping, "Statement", "Complex128")
-basicMethod(wrapping, "Statement", "Else")
-basicMethod(wrapping, "Statement", "Err")
-basicMethod(wrapping, "Statement", "Error")
-basicMethod(wrapping, "Statement", "Float32")
-basicMethod(wrapping, "Statement", "Float64")
-basicMethod(wrapping, "Statement", "Func")
-basicMethod(wrapping, "Statement", "Iota")
-basicMethod(wrapping, "Statement", "Int")
-basicMethod(wrapping, "Statement", "Int8")
-basicMethod(wrapping, "Statement", "Int16")
-basicMethod(wrapping, "Statement", "Int32")
-basicMethod(wrapping, "Statement", "Int64")
-basicMethod(wrapping, "Statement", "Nil")
-basicMethod(wrapping, "Statement", "Range")
-basicMethod(wrapping, "Statement", "Recover")
-basicMethod(wrapping, "Statement", "Rune")
-basicMethod(wrapping, "Statement", "String")
-basicMethod(wrapping, "Statement", "Uint")
-basicMethod(wrapping, "Statement", "Uint8")
-basicMethod(wrapping, "Statement", "Uint16")
-basicMethod(wrapping, "Statement", "Uint32")
-basicMethod(wrapping, "Statement", "Uint64")
-basicMethod(wrapping, "Statement", "Uintptr")
+    for m in basicStatementMethods:
+        basicMethod(wrapping, "Statement", m)
 
-wrapping.Save("wrapping.go")
+    wrapping.Save("wrapping.go")
+
+makeLinking()
+makeWraping()
