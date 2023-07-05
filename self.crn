@@ -26,19 +26,31 @@ def newFileWithComment():
 def addGlobals(name):
     return Qual(STARLARK, "Universe").Index(name).Op("=").Qual(STARLARK, "NewBuiltin").Call(name, Id("wrapped" + name))
 
+def newStarlarkBuiltinFunc(f, name, param, param2, param3, param4):
+    return f.Func().Id(name).Params(
+        Id(param).Op("*").Qual(STARLARK, "Thread"),
+        Id(param2).Op("*").Qual(STARLARK, "Builtin"),
+        Id(param3).Qual(STARLARK, "Tuple"),
+        Id(param4).Index().Qual(STARLARK, "Tuple"),
+    ).Parens(List(Qual(STARLARK, "Value"), Error()))
+
+def returnWrappedStatement(value):
+    return Return(Id("wrapper").Types(Op("*").Qual(JEN, "Statement")).Values({
+            Id("inner"): value,
+            Id("wType"): Op("&").Id("jenStatementWrappedType"),
+    }), Nil())
+
+def basicFunction(f, functionName):
+    newStarlarkBuiltinFunc(f, "wrapped" + functionName, "_", "_", "_", "_").Block(
+        returnWrappedStatement(Qual(JEN, functionName).Call()),
+    )
+    f.Line()
+
 def basicMethod(f, typeName, methodName):
-    f.Func().Id("jen" + typeName +"_" + methodName).Params(
-        Id("_").Op("*").Qual(STARLARK, "Thread"),
-        Id("b").Op("*").Qual(STARLARK, "Builtin"),
-        Id("_").Qual(STARLARK, "Tuple"),
-        Id("_").Index().Qual(STARLARK, "Tuple"),
-    ).Parens(List(Qual(STARLARK, "Value"), Error())).Block(
+    newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "_", "_").Block(
         Id("recv").Op(":=").Id("b").Dot("Receiver").Call().Assert(Id("wrapper").Types(Op("*").Qual(JEN, typeName))),
         Id("stmt").Op(":=").Id("recv").Dot("inner").Dot(methodName).Call(),
-        Return(Id("wrapper").Types(Op("*").Qual(JEN, "Statement")).Values({
-            Id("inner"): Id("stmt"),
-            Id("wType"): Op("&").Id("jenStatementWrappedType"),
-        }), Nil())
+        returnWrappedStatement(Id("stmt")),
     )
     f.Line()
 
@@ -67,6 +79,47 @@ linking.Func().Id("initCornucopiaGlobals").Params().Block(*[addGlobals(name) for
 linking.Save("linking.go")
 
 wrapping = newFileWithComment()
+
+basicFunction(wrapping, "Any")
+basicFunction(wrapping, "Bool")
+basicFunction(wrapping, "Break")
+basicFunction(wrapping, "Byte")
+basicFunction(wrapping, "Chan")
+basicFunction(wrapping, "Comparable")
+basicFunction(wrapping, "Complex64")
+basicFunction(wrapping, "Complex128")
+basicFunction(wrapping, "Continue")
+basicFunction(wrapping, "Default")
+basicFunction(wrapping, "Defer")
+basicFunction(wrapping, "Empty")
+basicFunction(wrapping, "Err")
+basicFunction(wrapping, "Error")
+basicFunction(wrapping, "Fallthrough")
+basicFunction(wrapping, "Float32")
+basicFunction(wrapping, "Float64")
+basicFunction(wrapping, "Func")
+basicFunction(wrapping, "Go")
+basicFunction(wrapping, "Goto")
+basicFunction(wrapping, "Int")
+basicFunction(wrapping, "Int8")
+basicFunction(wrapping, "Int16")
+basicFunction(wrapping, "Int32")
+basicFunction(wrapping, "Int64")
+basicFunction(wrapping, "Iota")
+basicFunction(wrapping, "Line")
+basicFunction(wrapping, "Nil")
+basicFunction(wrapping, "Null")
+basicFunction(wrapping, "Recover")
+basicFunction(wrapping, "Rune")
+basicFunction(wrapping, "Select")
+basicFunction(wrapping, "String")
+basicFunction(wrapping, "Uint")
+basicFunction(wrapping, "Uint8")
+basicFunction(wrapping, "Uint16")
+basicFunction(wrapping, "Uint32")
+basicFunction(wrapping, "Uint64")
+basicFunction(wrapping, "Uintptr")
+basicFunction(wrapping, "Var")
 
 basicMethod(wrapping, "File", "Const")
 basicMethod(wrapping, "File", "Var")
