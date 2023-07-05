@@ -328,12 +328,6 @@ func jenStatement_Qual(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tu
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
-func jenStatement_Range(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Range()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
 func jenStatement_Real(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var value starlark.Value
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "c", &value); err != nil {
@@ -341,24 +335,6 @@ func jenStatement_Real(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tu
 	}
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.Real(convertToCode(value))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Recover(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Recover()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Rune(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Rune()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_String(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.String()
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
@@ -377,42 +353,6 @@ func jenStatement_Tag(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple,
 func jenStatement_Types(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.Types(convertToCodeSlice(args)...)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Uint(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Uint()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Uint8(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Uint8()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Uint16(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Uint16()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Uint32(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Uint32()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Uint64(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Uint64()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Uintptr(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Uintptr()
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 

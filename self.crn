@@ -57,7 +57,6 @@ linking.Func().Id("init").Params().Block(
         "Comment", "Const", "Var", "Type", "Func", 
         "Line", "Save",
     ]),
-    Line(),
     registerType("jenStatement", sorted(jenStatementMethodNames + commonNames)),
 )
 
@@ -95,5 +94,15 @@ basicMethod(wrapping, "Statement", "Int16")
 basicMethod(wrapping, "Statement", "Int32")
 basicMethod(wrapping, "Statement", "Int64")
 basicMethod(wrapping, "Statement", "Nil")
+basicMethod(wrapping, "Statement", "Range")
+basicMethod(wrapping, "Statement", "Recover")
+basicMethod(wrapping, "Statement", "Rune")
+basicMethod(wrapping, "Statement", "String")
+basicMethod(wrapping, "Statement", "Uint")
+basicMethod(wrapping, "Statement", "Uint8")
+basicMethod(wrapping, "Statement", "Uint16")
+basicMethod(wrapping, "Statement", "Uint32")
+basicMethod(wrapping, "Statement", "Uint64")
+basicMethod(wrapping, "Statement", "Uintptr")
 
 wrapping.Save("wrapping.go")
