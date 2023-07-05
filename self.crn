@@ -1,0 +1,47 @@
+
+STARLARK = "go.starlark.net/starlark"
+
+def addGlobals(name):
+    return Qual(STARLARK, "Universe").Index(name).Op("=").Qual(STARLARK, "NewBuiltin").Call(name, Id("wrapped" + name))
+
+def newMethod(typeName, name):
+    return Qual(STARLARK, "NewBuiltin").Call(name, Id(typeName + "_" + name))
+
+def registerType(name, methodNames):
+    return Id(name+"WrappedType").Op("=").Id("makeWrappedType").Call(name, *[newMethod(name, methodName) for methodName in methodNames])
+
+commonNames = [
+    "Any", "Append", "Bool", "Byte", "Cap", "Chan", "Comment", "Comparable", "Complex", "Complex64", "Complex128", "Err", "Error",
+    "Func", "Float32", "Float64", "Id", "Int", "Int8", "Int16", "Int32", "Int64","Imag", "Index", "Interface", "Iota", "Len",
+    "Line", "Lit", "LitByte", "LitRune", "Make", "Map", "Nil", "Op", "Parens", "Qual", "Real", "Recover", "Rune", "String",
+    "Uint","Uint8", "Uint16", "Uint32", "Uint64", "Uintptr", "Values",
+]
+
+globalNames = [
+    "NewFile",  "Break", "Case", "Close", "Continue", "Copy", "Default", "Defer", "Delete", "Empty", "Fallthrough", "For", "Go",
+    "Goto", "If", "List", "Null", "Return", "Select", "Switch", "Union", "Var",
+]
+
+jenStatementMethodNames = [
+    "Add", "Assert", "Block", "Call", "Clone", "Defs", "Dot", "Else", "Params", "Range", "Struct", "Tag", "Types",
+]
+
+f = NewFile("main")
+f.HeaderComment("This file is generated - do not edit.")
+
+f.Func().Id("init").Params().Block(
+    registerType("jenFile", [
+        "HeaderComment", "PackageComment",
+        "Anon", "ImportAlias", "ImportName","ImportNames",
+        "Comment", "Const", "Var", "Type", "Func", 
+        "Line", "Save",
+    ]),
+    Line(),
+    registerType("jenStatement", sorted(jenStatementMethodNames + commonNames)),
+)
+
+f.Line()
+
+f.Func().Id("initCornucopiaGlobals").Params().Block(*[addGlobals(name) for name in sorted(globalNames + commonNames)])
+
+f.Save("linking.go")

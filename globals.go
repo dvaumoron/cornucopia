@@ -23,81 +23,6 @@ import (
 	"go.starlark.net/starlark"
 )
 
-func initCornucopiaGlobals() {
-	addGlobals("NewFile", wrappedNewFile)
-	addGlobals("Any", wrappedAny)
-	addGlobals("Append", wrappedAppend)
-	addGlobals("Bool", wrappedBool)
-	addGlobals("Break", wrappedBreak)
-	addGlobals("Byte", wrappedByte)
-	addGlobals("Cap", wrappedCap)
-	addGlobals("Case", wrappedCase)
-	addGlobals("Chan", wrappedChan)
-	addGlobals("Close", wrappedClose)
-	addGlobals("Comment", wrappedComment)
-	addGlobals("Comparable", wrappedComparable)
-	addGlobals("Complex", wrappedComplex)
-	addGlobals("Complex64", wrappedComplex64)
-	addGlobals("Complex128", wrappedComplex128)
-	addGlobals("Continue", wrappedContinue)
-	addGlobals("Copy", wrappedCopy)
-	addGlobals("Default", wrappedDefault)
-	addGlobals("Defer", wrappedDefer)
-	addGlobals("Delete", wrappedDelete)
-	addGlobals("Empty", wrappedEmpty)
-	addGlobals("Err", wrappedErr)
-	addGlobals("Fallthrough", wrappedFallthrough)
-	addGlobals("Float32", wrappedFloat32)
-	addGlobals("Float64", wrappedFloat64)
-	addGlobals("For", wrappedFor)
-	addGlobals("Func", wrappedFunc)
-	addGlobals("Go", wrappedGo)
-	addGlobals("Goto", wrappedGoto)
-	addGlobals("Id", wrappedId)
-	addGlobals("If", wrappedIf)
-	addGlobals("Imag", wrappedImag)
-	addGlobals("Index", wrappedIndex)
-	addGlobals("Int", wrappedInt)
-	addGlobals("Int8", wrappedInt8)
-	addGlobals("Int16", wrappedInt16)
-	addGlobals("Int32", wrappedInt32)
-	addGlobals("Int64", wrappedInt64)
-	addGlobals("Interface", wrappedInterface)
-	addGlobals("Iota", wrappedIota)
-	addGlobals("Len", wrappedLen)
-	addGlobals("Line", wrappedLine)
-	addGlobals("List", wrappedList)
-	addGlobals("Lit", wrappedLit)
-	addGlobals("LitByte", wrappedLitByte)
-	addGlobals("LitRune", wrappedLitRune)
-	addGlobals("Make", wrappedMake)
-	addGlobals("Map", wrappedMap)
-	addGlobals("Nil", wrappedNil)
-	addGlobals("Null", wrappedNull)
-	addGlobals("Op", wrappedOp)
-	addGlobals("Parens", wrappedParens)
-	addGlobals("Qual", wrappedQual)
-	addGlobals("Real", wrappedReal)
-	addGlobals("Recover", wrappedRecover)
-	addGlobals("Return", wrappedReturn)
-	addGlobals("Select", wrappedSelect)
-	addGlobals("String", wrappedString)
-	addGlobals("Switch", wrappedSwitch)
-	addGlobals("Uint", wrappedUint)
-	addGlobals("Uint8", wrappedUint8)
-	addGlobals("Uint16", wrappedUint16)
-	addGlobals("Uint32", wrappedUint32)
-	addGlobals("Uint64", wrappedUint64)
-	addGlobals("Uintptr", wrappedUintptr)
-	addGlobals("Union", wrappedUnion)
-	addGlobals("Var", wrappedVar)
-	addGlobals("Values", wrappedValues)
-}
-
-func addGlobals(name string, wrapped func(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error)) {
-	starlark.Universe[name] = starlark.NewBuiltin(name, wrapped)
-}
-
 func wrappedNewFile(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var packageName string
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "packageName", &packageName); err != nil {
@@ -225,6 +150,10 @@ func wrappedEmpty(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ [
 
 func wrappedErr(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{inner: jen.Err(), wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedError(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{inner: jen.Error(), wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedFallthrough(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
@@ -423,6 +352,10 @@ func wrappedRecover(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _
 func wrappedReturn(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return_ := jen.Return(convertToCodeSlice(args)...)
 	return wrapper[*jen.Statement]{inner: return_, wType: &jenStatementWrappedType}, nil
+}
+
+func wrappedRune(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{inner: jen.Rune(), wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedSelect(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {

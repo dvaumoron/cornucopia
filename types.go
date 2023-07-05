@@ -29,84 +29,6 @@ import (
 var jenFileWrappedType wrappedType
 var jenStatementWrappedType wrappedType
 
-func init() {
-	jenFileWrappedType = makeWrappedType("jenFile",
-		starlark.NewBuiltin("HeaderComment", jenFile_HeaderComment),
-		starlark.NewBuiltin("PackageComment", jenFile_PackageComment),
-		starlark.NewBuiltin("Anon", jenFile_Anon),
-		starlark.NewBuiltin("ImportAlias", jenFile_ImportAlias),
-		starlark.NewBuiltin("ImportName", jenFile_ImportName),
-		starlark.NewBuiltin("ImportNames", jenFile_ImportNames),
-		starlark.NewBuiltin("Comment", jenFile_Comment),
-		starlark.NewBuiltin("Const", jenFile_Const),
-		starlark.NewBuiltin("Var", jenFile_Var),
-		starlark.NewBuiltin("Type", jenFile_Type),
-		starlark.NewBuiltin("Func", jenFile_Func),
-		starlark.NewBuiltin("Save", jenFile_Save),
-	)
-
-	jenStatementWrappedType = makeWrappedType("jenStatement",
-		starlark.NewBuiltin("Add", jenStatement_Add),
-		starlark.NewBuiltin("Any", jenStatement_Any),
-		starlark.NewBuiltin("Append", jenStatement_Append),
-		starlark.NewBuiltin("Assert", jenStatement_Assert),
-		starlark.NewBuiltin("Block", jenStatement_Block),
-		starlark.NewBuiltin("Bool", jenStatement_Bool),
-		starlark.NewBuiltin("Byte", jenStatement_Byte),
-		starlark.NewBuiltin("Call", jenStatement_Call),
-		starlark.NewBuiltin("Cap", jenStatement_Cap),
-		starlark.NewBuiltin("Chan", jenStatement_Chan),
-		starlark.NewBuiltin("Clone", jenStatement_Clone),
-		starlark.NewBuiltin("Comment", jenStatement_Comment),
-		starlark.NewBuiltin("Comparable", jenStatement_Comparable),
-		starlark.NewBuiltin("Complex", jenStatement_Complex),
-		starlark.NewBuiltin("Complex64", jenStatement_Complex64),
-		starlark.NewBuiltin("Complex128", jenStatement_Complex128),
-		starlark.NewBuiltin("Defs", jenStatement_Defs),
-		starlark.NewBuiltin("Dot", jenStatement_Dot),
-		starlark.NewBuiltin("Else", jenStatement_Else),
-		starlark.NewBuiltin("Err", jenStatement_Err),
-		starlark.NewBuiltin("Error", jenStatement_Error),
-		starlark.NewBuiltin("Float32", jenStatement_Float32),
-		starlark.NewBuiltin("Float64", jenStatement_Float64),
-		starlark.NewBuiltin("Func", jenStatement_Func),
-		starlark.NewBuiltin("Id", jenStatement_Id),
-		starlark.NewBuiltin("Imag", jenStatement_Imag),
-		starlark.NewBuiltin("Index", jenStatement_Index),
-		starlark.NewBuiltin("Int", jenStatement_Int),
-		starlark.NewBuiltin("Int8", jenStatement_Int8),
-		starlark.NewBuiltin("Int16", jenStatement_Int16),
-		starlark.NewBuiltin("Int32", jenStatement_Int32),
-		starlark.NewBuiltin("Int64", jenStatement_Int64),
-		starlark.NewBuiltin("Interface", jenStatement_Interface),
-		starlark.NewBuiltin("Iota", jenStatement_Iota),
-		starlark.NewBuiltin("Len", jenStatement_Len),
-		starlark.NewBuiltin("Lit", jenStatement_Lit),
-		starlark.NewBuiltin("LitByte", jenStatement_LitByte),
-		starlark.NewBuiltin("LitRune", jenStatement_LitRune),
-		starlark.NewBuiltin("Make", jenStatement_Make),
-		starlark.NewBuiltin("Map", jenStatement_Map),
-		starlark.NewBuiltin("Nil", jenStatement_Nil),
-		starlark.NewBuiltin("Op", jenStatement_Op),
-		starlark.NewBuiltin("Params", jenStatement_Params),
-		starlark.NewBuiltin("Qual", jenStatement_Qual),
-		starlark.NewBuiltin("Real", jenStatement_Real),
-		starlark.NewBuiltin("Recover", jenStatement_Recover),
-		starlark.NewBuiltin("Rune", jenStatement_Rune),
-		starlark.NewBuiltin("String", jenStatement_String),
-		starlark.NewBuiltin("Struct", jenStatement_Struct),
-		starlark.NewBuiltin("Tag", jenStatement_Tag),
-		starlark.NewBuiltin("Types", jenStatement_Types),
-		starlark.NewBuiltin("Uint", jenStatement_Uint),
-		starlark.NewBuiltin("Uint8", jenStatement_Uint8),
-		starlark.NewBuiltin("Uint16", jenStatement_Uint16),
-		starlark.NewBuiltin("Uint32", jenStatement_Uint32),
-		starlark.NewBuiltin("Uint64", jenStatement_Uint64),
-		starlark.NewBuiltin("Uintptr", jenStatement_Uintptr),
-		starlark.NewBuiltin("Values", jenStatement_Values),
-	)
-}
-
 func jenFile_HeaderComment(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var comment string
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "comment", &comment); err != nil {
@@ -197,6 +119,12 @@ func jenFile_Func(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ [
 	recv := b.Receiver().(wrapper[*jen.File])
 	stmt := recv.inner.Func()
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
+func jenFile_Line(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.File])
+	recv.inner.Line()
+	return starlark.None, nil
 }
 
 func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -461,6 +389,12 @@ func jenStatement_Len(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tup
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
+func jenStatement_Line(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Line()
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
 func jenStatement_Lit(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var value starlark.Value
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
@@ -529,6 +463,16 @@ func jenStatement_Params(_ *starlark.Thread, b *starlark.Builtin, args starlark.
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
+func jenStatement_Parens(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var item starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "item", &item); err != nil {
+		return nil, err
+	}
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Parens(convertToCode(item))
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
 func jenStatement_Qual(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var path string
 	var name string
@@ -537,6 +481,12 @@ func jenStatement_Qual(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tu
 	}
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.Qual(path, name)
+	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+}
+
+func jenStatement_Range(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.Statement])
+	stmt := recv.inner.Range()
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
