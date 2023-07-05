@@ -1,5 +1,6 @@
 
 # linking declaration  part (register wrapping function into starlark)
+
 commonNames = [
     "Any", "Append", "Bool", "Byte", "Cap", "Chan", "Comment", "Comparable", "Complex", "Complex64", "Complex128", "Err", "Error",
     "Func", "Float32", "Float64", "Id", "Int", "Int8", "Int16", "Int32", "Int64","Imag", "Index", "Interface", "Iota", "Len",
@@ -22,11 +23,14 @@ jenStatementMethodNames = [
 ]
 
 # wrapping declaration part (generate go function fitting starlark interface)
-basicFunctions = [
-    "Any", "Bool", "Break", "Byte", "Chan", "Comparable", "Complex64", "Complex128", "Continue", "Default", "Defer", "Empty", "Err",
-    "Error", "Fallthrough", "Float32", "Float64", "Func", "Go", "Goto", "Int", "Int8", "Int16", "Int32", "Int64", "Iota", "Line",
-    "Nil", "Null", "Recover", "Rune", "Select", "String", "Uint", "Uint8", "Uint16", "Uint32", "Uint64", "Uintptr", "Var",
+
+commonBasic = [
+    "Any", "Bool", "Byte", "Chan", "Comparable", "Complex64", "Complex128", "Err", "Error", "Float32", "Float64",
+    "Func", "Int", "Int8", "Int16", "Int32", "Int64", "Iota", "Nil", "Recover", "Rune", "String",
+    "Uint", "Uint8", "Uint16", "Uint32", "Uint64", "Uintptr", 
 ]
+
+basicFunctions = ["Break", "Continue", "Default", "Defer", "Empty", "Fallthrough", "Go", "Goto", "Line", "Null", "Select", "Var"]
 
 commonVarargs = ["Append", "Index", "Interface", "Make"]
 
@@ -38,11 +42,7 @@ oneargFunctions = ["Close"]
 
 basicFileMethods = ["Const", "Var", "Type", "Func"]
 
-basicStatementMethods = [
-    "Any", "Bool", "Byte", "Chan", "Clone", "Comparable", "Complex64", "Complex128", "Else", "Err", "Error", "Float32", "Float64",
-    "Func", "Iota", "Int", "Int8", "Int16", "Int32", "Int64", "Nil", "Range", "Recover", "Rune", "String",
-    "Uint", "Uint8", "Uint16", "Uint32", "Uint64", "Uintptr"
-]
+basicStatementMethods = ["Clone", "Else", "Range"]
 
 varargsStatementMethods = ["Add", "Block", "Call", "Defs", "Params", "Struct", "Types"]
 
@@ -151,7 +151,7 @@ def makeLinking():
 def makeWraping():
     wrapping = newFileWithComment()
 
-    for f in basicFunctions:
+    for f in sorted(basicFunctions + commonBasic):
         basicFunction(wrapping, f)
 
     for f in sorted(varargsFunctions + commonVarargs):
@@ -163,7 +163,7 @@ def makeWraping():
     for m in basicFileMethods:
         basicMethod(wrapping, "File", m)
 
-    for m in basicStatementMethods:
+    for m in sorted(basicStatementMethods + commonBasic):
         basicMethod(wrapping, "Statement", m)
 
     for m in sorted(varargsStatementMethods + commonVarargs):

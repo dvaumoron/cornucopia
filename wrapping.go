@@ -49,16 +49,16 @@ func wrappedComparable(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple
 	}, nil
 }
 
-func wrappedComplex64(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+func wrappedComplex128(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
-		inner: jen.Complex64(),
+		inner: jen.Complex128(),
 		wType: &jenStatementWrappedType,
 	}, nil
 }
 
-func wrappedComplex128(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+func wrappedComplex64(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
-		inner: jen.Complex128(),
+		inner: jen.Complex64(),
 		wType: &jenStatementWrappedType,
 	}, nil
 }
@@ -154,13 +154,6 @@ func wrappedInt(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []s
 	}, nil
 }
 
-func wrappedInt8(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	return wrapper[*jen.Statement]{
-		inner: jen.Int8(),
-		wType: &jenStatementWrappedType,
-	}, nil
-}
-
 func wrappedInt16(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
 		inner: jen.Int16(),
@@ -178,6 +171,13 @@ func wrappedInt32(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ [
 func wrappedInt64(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
 		inner: jen.Int64(),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func wrappedInt8(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{
+		inner: jen.Int8(),
 		wType: &jenStatementWrappedType,
 	}, nil
 }
@@ -245,13 +245,6 @@ func wrappedUint(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []
 	}, nil
 }
 
-func wrappedUint8(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	return wrapper[*jen.Statement]{
-		inner: jen.Uint8(),
-		wType: &jenStatementWrappedType,
-	}, nil
-}
-
 func wrappedUint16(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
 		inner: jen.Uint16(),
@@ -269,6 +262,13 @@ func wrappedUint32(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ 
 func wrappedUint64(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
 		inner: jen.Uint64(),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func wrappedUint8(_ *starlark.Thread, _ *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{
+		inner: jen.Uint8(),
 		wType: &jenStatementWrappedType,
 	}, nil
 }
@@ -511,16 +511,16 @@ func jenStatement_Comparable(_ *starlark.Thread, b *starlark.Builtin, _ starlark
 	}, nil
 }
 
-func jenStatement_Complex64(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+func jenStatement_Complex128(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
-		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Complex64(),
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Complex128(),
 		wType: &jenStatementWrappedType,
 	}, nil
 }
 
-func jenStatement_Complex128(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+func jenStatement_Complex64(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
-		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Complex128(),
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Complex64(),
 		wType: &jenStatementWrappedType,
 	}, nil
 }
@@ -567,23 +567,9 @@ func jenStatement_Func(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple
 	}, nil
 }
 
-func jenStatement_Iota(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	return wrapper[*jen.Statement]{
-		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Iota(),
-		wType: &jenStatementWrappedType,
-	}, nil
-}
-
 func jenStatement_Int(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
 		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Int(),
-		wType: &jenStatementWrappedType,
-	}, nil
-}
-
-func jenStatement_Int8(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	return wrapper[*jen.Statement]{
-		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Int8(),
 		wType: &jenStatementWrappedType,
 	}, nil
 }
@@ -605,6 +591,20 @@ func jenStatement_Int32(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tupl
 func jenStatement_Int64(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
 		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Int64(),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func jenStatement_Int8(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Int8(),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func jenStatement_Iota(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Iota(),
 		wType: &jenStatementWrappedType,
 	}, nil
 }
@@ -651,13 +651,6 @@ func jenStatement_Uint(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple
 	}, nil
 }
 
-func jenStatement_Uint8(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	return wrapper[*jen.Statement]{
-		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Uint8(),
-		wType: &jenStatementWrappedType,
-	}, nil
-}
-
 func jenStatement_Uint16(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
 		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Uint16(),
@@ -675,6 +668,13 @@ func jenStatement_Uint32(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tup
 func jenStatement_Uint64(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	return wrapper[*jen.Statement]{
 		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Uint64(),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func jenStatement_Uint8(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	return wrapper[*jen.Statement]{
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Uint8(),
 		wType: &jenStatementWrappedType,
 	}, nil
 }
