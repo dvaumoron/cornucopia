@@ -1,4 +1,5 @@
 
+# linking declaration  part (register wrapping function into starlark)
 commonNames = [
     "Any", "Append", "Bool", "Byte", "Cap", "Chan", "Comment", "Comparable", "Complex", "Complex64", "Complex128", "Err", "Error",
     "Func", "Float32", "Float64", "Id", "Int", "Int8", "Int16", "Int32", "Int64","Imag", "Index", "Interface", "Iota", "Len",
@@ -20,15 +21,20 @@ jenStatementMethodNames = [
     "Add", "Assert", "Block", "Call", "Clone", "Defs", "Dot", "Else", "Params", "Range", "Struct", "Tag", "Types",
 ]
 
+# wrapping declaration part (generate go function fitting starlark interface)
 basicFunctions = [
     "Any", "Bool", "Break", "Byte", "Chan", "Comparable", "Complex64", "Complex128", "Continue", "Default", "Defer", "Empty", "Err",
     "Error", "Fallthrough", "Float32", "Float64", "Func", "Go", "Goto", "Int", "Int8", "Int16", "Int32", "Int64", "Iota", "Line",
     "Nil", "Null", "Recover", "Rune", "Select", "String", "Uint", "Uint8", "Uint16", "Uint32", "Uint64", "Uintptr", "Var",
 ]
 
-varargsFunctions = ["Append", "Case", "For", "If", "Index", "Interface", "List", "Make", "Return", "Switch", "Union"]
+commonVarargs = ["Append", "Index", "Interface", "Make"]
 
-oneargFunctions = ["Cap", "Close", "Imag", "Len", "Map", "Parens", "Real"]
+varargsFunctions = ["Case", "For", "If", "List", "Return", "Switch", "Union"]
+
+commonOneargs = ["Cap", "Imag", "Len", "Map", "Parens", "Real"]
+
+oneargFunctions = ["Close"]
 
 basicFileMethods = ["Const", "Var", "Type", "Func"]
 
@@ -38,9 +44,11 @@ basicStatementMethods = [
     "Uint", "Uint8", "Uint16", "Uint32", "Uint64", "Uintptr"
 ]
 
-varargsStatementMethods = ["Add", "Append", "Block", "Call", "Defs", "Index", "Interface", "Make", "Params", "Struct", "Types"]
+varargsStatementMethods = ["Add", "Block", "Call", "Defs", "Params", "Struct", "Types"]
 
-oneargStatementMethods = ["Assert", "Cap", "Imag", "Len", "Map", "Parens", "Real"]
+oneargStatementMethods = ["Assert"]
+
+# generation part
 
 JEN = "github.com/dave/jennifer/jen"
 STARLARK = "go.starlark.net/starlark"
@@ -146,10 +154,10 @@ def makeWraping():
     for f in basicFunctions:
         basicFunction(wrapping, f)
 
-    for f in varargsFunctions:
+    for f in sorted(varargsFunctions + commonVarargs):
         varargsFunction(wrapping, f)
 
-    for f in oneargFunctions:
+    for f in sorted(oneargFunctions + commonOneargs):
         oneargFunction(wrapping, f)
 
     for m in basicFileMethods:
@@ -158,10 +166,10 @@ def makeWraping():
     for m in basicStatementMethods:
         basicMethod(wrapping, "Statement", m)
 
-    for m in varargsStatementMethods:
+    for m in sorted(varargsStatementMethods + commonVarargs):
         varargsMethod(wrapping, "Statement", m)
 
-    for m in oneargStatementMethods:
+    for m in sorted(oneargStatementMethods + commonOneargs):
         oneargMethod(wrapping, "Statement", m)
 
     wrapping.Save("wrapping.go")
