@@ -19,7 +19,6 @@
 package main
 
 import (
-	"errors"
 	"io"
 	"sort"
 	"strings"
@@ -31,8 +30,6 @@ import (
 // check interface compliance
 var _ starlark.HasAttrs = wrapper[jen.Code]{}
 var _ coder = wrapper[jen.Code]{}
-
-var errUnhashable = errors.New("unhashable builtin type")
 
 type coder interface {
 	code() jen.Code
@@ -92,7 +89,7 @@ func (w wrapper[T]) Truth() starlark.Bool {
 }
 
 func (w wrapper[T]) Hash() (uint32, error) {
-	return 0, errUnhashable
+	return starlark.String(w.String()).Hash()
 }
 
 func (w wrapper[T]) Attr(name string) (starlark.Value, error) {

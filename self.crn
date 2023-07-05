@@ -1,15 +1,4 @@
 
-STARLARK = "go.starlark.net/starlark"
-
-def addGlobals(name):
-    return Qual(STARLARK, "Universe").Index(name).Op("=").Qual(STARLARK, "NewBuiltin").Call(name, Id("wrapped" + name))
-
-def newMethod(typeName, name):
-    return Qual(STARLARK, "NewBuiltin").Call(name, Id(typeName + "_" + name))
-
-def registerType(name, methodNames):
-    return Id(name+"WrappedType").Op("=").Id("makeWrappedType").Call(name, *[newMethod(name, methodName) for methodName in methodNames])
-
 commonNames = [
     "Any", "Append", "Bool", "Byte", "Cap", "Chan", "Comment", "Comparable", "Complex", "Complex64", "Complex128", "Err", "Error",
     "Func", "Float32", "Float64", "Id", "Int", "Int8", "Int16", "Int32", "Int64","Imag", "Index", "Interface", "Iota", "Len",
@@ -26,10 +15,43 @@ jenStatementMethodNames = [
     "Add", "Assert", "Block", "Call", "Clone", "Defs", "Dot", "Else", "Params", "Range", "Struct", "Tag", "Types",
 ]
 
-f = NewFile("main")
-f.HeaderComment("This file is generated - do not edit.")
+JEN = "github.com/dave/jennifer/jen"
+STARLARK = "go.starlark.net/starlark"
 
-f.Func().Id("init").Params().Block(
+def newFileWithComment():
+    f = NewFile("main")
+    f.HeaderComment("This file is generated - do not edit.")
+    return f
+
+def addGlobals(name):
+    return Qual(STARLARK, "Universe").Index(name).Op("=").Qual(STARLARK, "NewBuiltin").Call(name, Id("wrapped" + name))
+
+def basicMethod(f, typeName, methodName):
+    wrapperType = Id("wrapper").Types(Op("*").Qual(JEN, "Statement"))
+    f.Func().Id(typeName +"_" + methodName).Params(
+        Id("_").Op("*").Qual(STARLARK, "Thread"),
+        Id("b").Op("*").Qual(STARLARK, "Builtin"),
+        Id("_").Qual(STARLARK, "Tuple"),
+        Id("_").Index().Qual(STARLARK, "Tuple"),
+    ).Parens(List(Qual(STARLARK, "Value"), Error())).Block(
+        Id("recv").Op(":=").Id("b").Dot("Receiver").Call().Assert(wrapperType),
+        Id("stmt").Op(":=").Id("recv").Dot("inner").Dot(methodName).Call(),
+        Return(wrapperType.Clone().Values({
+            Id("inner"): Id("stmt"),
+            Id("wType"): Op("&").Id(typeName + "WrappedType"),
+        }), Nil())
+    )
+    f.Line()
+
+def newMethod(typeName, name):
+    return Qual(STARLARK, "NewBuiltin").Call(name, Id(typeName + "_" + name))
+
+def registerType(name, methodNames):
+    return Id(name+"WrappedType").Op("=").Id("makeWrappedType").Call(name, *[newMethod(name, methodName) for methodName in methodNames])
+
+linking = newFileWithComment()
+
+linking.Func().Id("init").Params().Block(
     registerType("jenFile", [
         "HeaderComment", "PackageComment",
         "Anon", "ImportAlias", "ImportName","ImportNames",
@@ -40,8 +62,30 @@ f.Func().Id("init").Params().Block(
     registerType("jenStatement", sorted(jenStatementMethodNames + commonNames)),
 )
 
-f.Line()
+linking.Line()
 
-f.Func().Id("initCornucopiaGlobals").Params().Block(*[addGlobals(name) for name in sorted(globalNames + commonNames)])
+linking.Func().Id("initCornucopiaGlobals").Params().Block(*[addGlobals(name) for name in sorted(globalNames + commonNames)])
 
-f.Save("linking.go")
+linking.Save("linking.go")
+
+wrapping = newFileWithComment()
+
+basicMethod(wrapping, "jenFile", "Const")
+basicMethod(wrapping, "jenFile", "Var")
+basicMethod(wrapping, "jenFile", "Type")
+basicMethod(wrapping, "jenFile", "Func")
+basicMethod(wrapping, "jenFile", "Line")
+
+basicMethod(wrapping, "jenStatement", "Any")
+basicMethod(wrapping, "jenStatement", "Bool")
+basicMethod(wrapping, "jenStatement", "Byte")
+basicMethod(wrapping, "jenStatement", "Chan")
+basicMethod(wrapping, "jenStatement", "Clone")
+basicMethod(wrapping, "jenStatement", "Comparable")
+basicMethod(wrapping, "jenStatement", "Complex64")
+basicMethod(wrapping, "jenStatement", "Complex128")
+basicMethod(wrapping, "jenStatement", "Else")
+
+basicMethod(wrapping, "jenStatement", "Line")
+
+wrapping.Save("wrapping.go")
