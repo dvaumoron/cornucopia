@@ -27,18 +27,17 @@ def addGlobals(name):
     return Qual(STARLARK, "Universe").Index(name).Op("=").Qual(STARLARK, "NewBuiltin").Call(name, Id("wrapped" + name))
 
 def basicMethod(f, typeName, methodName):
-    wrapperType = Id("wrapper").Types(Op("*").Qual(JEN, "Statement"))
-    f.Func().Id(typeName +"_" + methodName).Params(
+    f.Func().Id("jen" + typeName +"_" + methodName).Params(
         Id("_").Op("*").Qual(STARLARK, "Thread"),
         Id("b").Op("*").Qual(STARLARK, "Builtin"),
         Id("_").Qual(STARLARK, "Tuple"),
         Id("_").Index().Qual(STARLARK, "Tuple"),
     ).Parens(List(Qual(STARLARK, "Value"), Error())).Block(
-        Id("recv").Op(":=").Id("b").Dot("Receiver").Call().Assert(wrapperType),
+        Id("recv").Op(":=").Id("b").Dot("Receiver").Call().Assert(Id("wrapper").Types(Op("*").Qual(JEN, typeName))),
         Id("stmt").Op(":=").Id("recv").Dot("inner").Dot(methodName).Call(),
-        Return(wrapperType.Clone().Values({
+        Return(Id("wrapper").Types(Op("*").Qual(JEN, "Statement")).Values({
             Id("inner"): Id("stmt"),
-            Id("wType"): Op("&").Id(typeName + "WrappedType"),
+            Id("wType"): Op("&").Id("jenStatementWrappedType"),
         }), Nil())
     )
     f.Line()
@@ -70,22 +69,25 @@ linking.Save("linking.go")
 
 wrapping = newFileWithComment()
 
-basicMethod(wrapping, "jenFile", "Const")
-basicMethod(wrapping, "jenFile", "Var")
-basicMethod(wrapping, "jenFile", "Type")
-basicMethod(wrapping, "jenFile", "Func")
-basicMethod(wrapping, "jenFile", "Line")
+basicMethod(wrapping, "File", "Const")
+basicMethod(wrapping, "File", "Var")
+basicMethod(wrapping, "File", "Type")
+basicMethod(wrapping, "File", "Func")
 
-basicMethod(wrapping, "jenStatement", "Any")
-basicMethod(wrapping, "jenStatement", "Bool")
-basicMethod(wrapping, "jenStatement", "Byte")
-basicMethod(wrapping, "jenStatement", "Chan")
-basicMethod(wrapping, "jenStatement", "Clone")
-basicMethod(wrapping, "jenStatement", "Comparable")
-basicMethod(wrapping, "jenStatement", "Complex64")
-basicMethod(wrapping, "jenStatement", "Complex128")
-basicMethod(wrapping, "jenStatement", "Else")
+basicMethod(wrapping, "Statement", "Any")
+basicMethod(wrapping, "Statement", "Bool")
+basicMethod(wrapping, "Statement", "Byte")
+basicMethod(wrapping, "Statement", "Chan")
+basicMethod(wrapping, "Statement", "Clone")
+basicMethod(wrapping, "Statement", "Comparable")
+basicMethod(wrapping, "Statement", "Complex64")
+basicMethod(wrapping, "Statement", "Complex128")
+basicMethod(wrapping, "Statement", "Else")
+basicMethod(wrapping, "Statement", "Err")
+basicMethod(wrapping, "Statement", "Error")
+basicMethod(wrapping, "Statement", "Float32")
+basicMethod(wrapping, "Statement", "Float64")
 
-basicMethod(wrapping, "jenStatement", "Line")
+basicMethod(wrapping, "Statement", "Line")
 
 wrapping.Save("wrapping.go")

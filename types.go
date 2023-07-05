@@ -97,6 +97,12 @@ func jenFile_ImportNames(_ *starlark.Thread, b *starlark.Builtin, args starlark.
 	return starlark.None, nil
 }
 
+func jenFile_Line(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
+	recv := b.Receiver().(wrapper[*jen.File])
+	recv.inner.Line()
+	return starlark.None, nil
+}
+
 func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var filename string
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "filename", &filename); err != nil {
@@ -194,30 +200,6 @@ func jenStatement_Dot(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tup
 	}
 	recv := b.Receiver().(wrapper[*jen.Statement])
 	stmt := recv.inner.Dot(name)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Err(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Err()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Error(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Error()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Float32(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Float32()
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func jenStatement_Float64(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(wrapper[*jen.Statement])
-	stmt := recv.inner.Float64()
 	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
