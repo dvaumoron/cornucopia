@@ -40,6 +40,8 @@ basicStatementMethods = [
 
 varargsStatementMethods = ["Add", "Append", "Block", "Call", "Defs", "Index", "Interface", "Make", "Params", "Struct", "Types"]
 
+oneargStatementMethods = ["Assert", "Cap", "Imag", "Len", "Map", "Parens", "Real"]
+
 JEN = "github.com/dave/jennifer/jen"
 STARLARK = "go.starlark.net/starlark"
 
@@ -114,6 +116,13 @@ def varargsMethod(f, typeName, methodName):
     )
     f.Line()
 
+def oneargMethod(f, typeName, methodName):
+    newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "args", "kwargs").Block(
+        DECLARE_VALUE, CALL_UNPACK,
+        returnWrappedStatement(assertReceiver(typeName, methodName).Call(CONVERT_VALUE_TO_CODE)),
+    )
+    f.Line()
+
 def registerType(name, methodNames):
     return Id(name+"WrappedType").Op("=").Id("makeWrappedType").Call(name, *[wrapFunc(methodName, name + "_" + methodName) for methodName in methodNames])
 
@@ -151,6 +160,9 @@ def makeWraping():
 
     for m in varargsStatementMethods:
         varargsMethod(wrapping, "Statement", m)
+
+    for m in oneargStatementMethods:
+        oneargMethod(wrapping, "Statement", m)
 
     wrapping.Save("wrapping.go")
 

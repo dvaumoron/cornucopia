@@ -762,3 +762,80 @@ func jenStatement_Types(_ *starlark.Thread, b *starlark.Builtin, args starlark.T
 		wType: &jenStatementWrappedType,
 	}, nil
 }
+
+func jenStatement_Assert(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
+		return nil, err
+	}
+	return wrapper[*jen.Statement]{
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Assert(convertToCode(value)),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func jenStatement_Cap(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
+		return nil, err
+	}
+	return wrapper[*jen.Statement]{
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Cap(convertToCode(value)),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func jenStatement_Imag(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
+		return nil, err
+	}
+	return wrapper[*jen.Statement]{
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Imag(convertToCode(value)),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func jenStatement_Len(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
+		return nil, err
+	}
+	return wrapper[*jen.Statement]{
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Len(convertToCode(value)),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func jenStatement_Map(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
+		return nil, err
+	}
+	return wrapper[*jen.Statement]{
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Map(convertToCode(value)),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func jenStatement_Parens(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
+		return nil, err
+	}
+	return wrapper[*jen.Statement]{
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Parens(convertToCode(value)),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
+
+func jenStatement_Real(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var value starlark.Value
+	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
+		return nil, err
+	}
+	return wrapper[*jen.Statement]{
+		inner: b.Receiver().(wrapper[*jen.Statement]).inner.Real(convertToCode(value)),
+		wType: &jenStatementWrappedType,
+	}, nil
+}
