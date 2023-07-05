@@ -2,13 +2,13 @@
 commonNames = [
     "Any", "Append", "Bool", "Byte", "Cap", "Chan", "Comment", "Comparable", "Complex", "Complex64", "Complex128", "Err", "Error",
     "Func", "Float32", "Float64", "Id", "Int", "Int8", "Int16", "Int32", "Int64","Imag", "Index", "Interface", "Iota", "Len",
-    "Line", "Lit", "LitByte", "LitRune", "Make", "Map", "Nil", "Op", "Parens", "Qual", "Real", "Recover", "Rune", "String",
+    "Lit", "LitByte", "LitRune", "Make", "Map", "Nil", "Op", "Parens", "Qual", "Real", "Recover", "Rune", "String",
     "Uint","Uint8", "Uint16", "Uint32", "Uint64", "Uintptr", "Values",
 ]
 
 globalNames = [
     "NewFile",  "Break", "Case", "Close", "Continue", "Copy", "Default", "Defer", "Delete", "Empty", "Fallthrough", "For", "Go",
-    "Goto", "If", "List", "Null", "Return", "Select", "Switch", "Union", "Var",
+    "Goto", "If", "Line", "List", "Null", "Return", "Select", "Switch", "Union", "Var",
 ]
 
 jenStatementMethodNames = [
@@ -87,7 +87,13 @@ basicMethod(wrapping, "Statement", "Err")
 basicMethod(wrapping, "Statement", "Error")
 basicMethod(wrapping, "Statement", "Float32")
 basicMethod(wrapping, "Statement", "Float64")
-
-basicMethod(wrapping, "Statement", "Line")
+basicMethod(wrapping, "Statement", "Func")
+basicMethod(wrapping, "Statement", "Iota")
+basicMethod(wrapping, "Statement", "Int")
+basicMethod(wrapping, "Statement", "Int8")
+basicMethod(wrapping, "Statement", "Int16")
+basicMethod(wrapping, "Statement", "Int32")
+basicMethod(wrapping, "Statement", "Int64")
+basicMethod(wrapping, "Statement", "Nil")
 
 wrapping.Save("wrapping.go")
