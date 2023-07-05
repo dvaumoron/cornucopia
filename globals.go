@@ -33,24 +33,6 @@ func wrappedNewFile(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple
 	return wrapper[*jen.File]{inner: file, wType: &jenFileWrappedType}, nil
 }
 
-func wrappedCap(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var value starlark.Value
-	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "c", &value); err != nil {
-		return nil, err
-	}
-	stmt := jen.Cap(convertToCode(value))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func wrappedClose(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var value starlark.Value
-	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "c", &value); err != nil {
-		return nil, err
-	}
-	stmt := jen.Close(convertToCode(value))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
 func wrappedComment(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var value string
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "comment", &value); err != nil {
@@ -99,24 +81,6 @@ func wrappedId(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwa
 	return wrapper[*jen.Statement]{inner: id, wType: &jenStatementWrappedType}, nil
 }
 
-func wrappedImag(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var value starlark.Value
-	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "c", &value); err != nil {
-		return nil, err
-	}
-	stmt := jen.Imag(convertToCode(value))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
-func wrappedLen(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var value starlark.Value
-	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "c", &value); err != nil {
-		return nil, err
-	}
-	stmt := jen.Len(convertToCode(value))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
 func wrappedLit(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var value starlark.Value
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
@@ -144,15 +108,6 @@ func wrappedLitRune(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple
 	return wrapper[*jen.Statement]{inner: lit, wType: &jenStatementWrappedType}, nil
 }
 
-func wrappedMap(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var type_ starlark.Value
-	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "type", &type_); err != nil {
-		return nil, err
-	}
-	stmt := jen.Map(convertToCode(type_))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
-}
-
 func wrappedOp(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var value string
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "op", &value); err != nil {
@@ -160,14 +115,6 @@ func wrappedOp(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwa
 	}
 	op := jen.Op(value)
 	return wrapper[*jen.Statement]{inner: op, wType: &jenStatementWrappedType}, nil
-}
-func wrappedParens(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var item starlark.Value
-	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "item", &item); err != nil {
-		return nil, err
-	}
-	parens := jen.Parens(convertToCode(item))
-	return wrapper[*jen.Statement]{inner: parens, wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedQual(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -178,15 +125,6 @@ func wrappedQual(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, k
 	}
 	qual := jen.Qual(path, name)
 	return wrapper[*jen.Statement]{inner: qual, wType: &jenStatementWrappedType}, nil
-}
-
-func wrappedReal(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var value starlark.Value
-	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "c", &value); err != nil {
-		return nil, err
-	}
-	stmt := jen.Real(convertToCode(value))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
 }
 
 func wrappedValues(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {

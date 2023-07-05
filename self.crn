@@ -28,6 +28,8 @@ basicFunctions = [
 
 varargsFunctions = ["Append", "Case", "For", "If", "Index", "Interface", "List", "Make", "Return", "Switch", "Union"]
 
+oneargFunctions = ["Cap", "Close", "Imag", "Len", "Map", "Parens", "Real"]
+
 basicFileMethods = ["Const", "Var", "Type", "Func"]
 
 basicStatementMethods = [
@@ -49,7 +51,7 @@ def newFileWithComment():
 def wrapFunc(name, functionName):
     return Qual(STARLARK, "NewBuiltin").Call(name, Id(functionName))
 
-def addGlobals(name):
+def declareGlobal(name):
     return Qual(STARLARK, "Universe").Index(name).Op("=").Add(wrapFunc(name, "wrapped" + name))
 
 def newStarlarkBuiltinFunc(f, name, param, param2, param3, param4):
@@ -80,6 +82,23 @@ def varargsFunction(f, functionName):
     )
     f.Line()
 
+DECLARE_VALUE = Var().Id("value").Qual(STARLARK, "Value")
+CALL_UNPACK = If(
+    Err().Op(":=").Qual(STARLARK, "UnpackArgs").Call(Id("b").Dot("Name").Call(), Id("args"), Id("kwargs"), "value", Op("&").Id("value")),
+    Err().Op("!=").Nil(),
+).Block(
+    Return(Nil(), Err()),
+)
+CONVERT_VALUE_TO_CODE = Id("convertToCode").Call(Id("value"))
+
+def oneargFunction(f, functionName):
+    newStarlarkBuiltinFunc(f, "wrapped" + functionName, "_", "b", "args", "kwargs").Block(
+        DECLARE_VALUE, CALL_UNPACK,
+        returnWrappedStatement(Qual(JEN, functionName).Call(CONVERT_VALUE_TO_CODE)),
+    )
+    f.Line()
+
+
 def assertReceiver(typeName, methodName):
     return Id("b").Dot("Receiver").Call().Assert(Id("wrapper").Types(Op("*").Qual(JEN, typeName))).Dot("inner").Dot(methodName)
 
@@ -108,7 +127,7 @@ def makeLinking():
 
     linking.Line()
 
-    linking.Func().Id("initCornucopiaGlobals").Params().Block(*[addGlobals(name) for name in sorted(globalNames + commonNames)])
+    linking.Func().Id("initCornucopiaGlobals").Params().Block(*[declareGlobal(name) for name in sorted(globalNames + commonNames)])
 
     linking.Save("linking.go")
 
@@ -120,6 +139,9 @@ def makeWraping():
 
     for f in varargsFunctions:
         varargsFunction(wrapping, f)
+
+    for f in oneargFunctions:
+        oneargFunction(wrapping, f)
 
     for m in basicFileMethods:
         basicMethod(wrapping, "File", m)
