@@ -19,6 +19,9 @@
 package main
 
 import (
+	"os"
+	"strings"
+
 	"github.com/dave/jennifer/jen"
 	"go.starlark.net/starlark"
 )
@@ -201,6 +204,13 @@ func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "filename", &filename); err != nil {
 		return nil, err
 	}
+
+	if index := strings.LastIndexByte(filename, '/'); index != -1 {
+		if err := os.MkdirAll(filename[:index], 0755); err != nil {
+			return nil, err
+		}
+	}
+
 	recv := b.Receiver().(wrapper[*jen.File])
 	if err := recv.inner.Save(filename); err != nil {
 		return nil, err
