@@ -19,12 +19,16 @@
 package glu
 
 import (
+	"errors"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/dave/jennifer/jen"
 	"go.starlark.net/starlark"
 )
+
+var errForbidAbsolute = errors.New("writing on an absolute path is forbidden")
 
 var jenFileWrappedType wrappedType
 var jenStatementWrappedType wrappedType
@@ -110,6 +114,10 @@ func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 	var filename string
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "filename", &filename); err != nil {
 		return nil, err
+	}
+
+	if path.IsAbs(filename) {
+		return nil, errForbidAbsolute
 	}
 
 	if index := strings.LastIndexByte(filename, '/'); index != -1 {

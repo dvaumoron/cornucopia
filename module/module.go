@@ -74,24 +74,18 @@ func (ml ModuleLoader) Load(thread *starlark.Thread, modulename string) (starlar
 	return e.globals, e.err
 }
 
-// Read data, trying the following resolution :
+// Read data, trying the following resolution for relative path :
 //   - read from current directory as base path
 //   - read from local repository path as base path
 //   - download from repository url and write the content in local repository path
 func (ml ModuleLoader) read(modulename string) ([]byte, error) {
-	currentPath, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := os.ReadFile(path.Join(currentPath, modulename))
-	if err == nil {
-		return data, nil
+	data, err := os.ReadFile(modulename)
+	if err == nil || path.IsAbs(modulename) {
+		return data, err
 	}
 
 	repoPath := path.Join(ml.path, modulename)
-	data, err = os.ReadFile(repoPath)
-	if err == nil {
+	if data, err = os.ReadFile(repoPath); err == nil {
 		return data, nil
 	}
 
@@ -100,8 +94,7 @@ func (ml ModuleLoader) read(modulename string) ([]byte, error) {
 		return nil, err
 	}
 
-	data, err = unsecureDownload(dUrl)
-	if err != nil {
+	if data, err = unsecureDownload(dUrl); err != nil {
 		return nil, err
 	}
 
