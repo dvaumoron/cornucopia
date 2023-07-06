@@ -44,6 +44,7 @@ func main() {
 	c, err := loadConfig()
 	if err != nil {
 		fmt.Println(msgErr, err)
+		os.Exit(1)
 	}
 
 	loader := module.MakeLoader(prefix, c.repoPath, c.repoUrl)
