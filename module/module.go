@@ -27,6 +27,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/dvaumoron/cornucopia/common"
 	"go.starlark.net/starlark"
 )
 
@@ -98,7 +99,7 @@ func (ml ModuleLoader) read(modulename string) ([]byte, error) {
 		return nil, err
 	}
 
-	if err = os.WriteFile(repoPath, data, 0644); err != nil {
+	if err = common.WriteFile(repoPath, data); err != nil {
 		return nil, err
 	}
 	return data, nil

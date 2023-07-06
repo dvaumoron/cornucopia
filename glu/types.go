@@ -20,11 +20,10 @@ package glu
 
 import (
 	"errors"
-	"os"
 	"path"
-	"strings"
 
 	"github.com/dave/jennifer/jen"
+	"github.com/dvaumoron/cornucopia/common"
 	"go.starlark.net/starlark"
 )
 
@@ -112,7 +111,8 @@ func jenFile_Line(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ [
 
 func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var filename string
-	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "filename", &filename); err != nil {
+	err := starlark.UnpackArgs(b.Name(), args, kwargs, "filename", &filename)
+	if err != nil {
 		return nil, err
 	}
 
@@ -120,14 +120,12 @@ func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 		return nil, errForbidAbsolute
 	}
 
-	if index := strings.LastIndexByte(filename, '/'); index != -1 {
-		if err := os.MkdirAll(filename[:index], 0755); err != nil {
-			return nil, err
-		}
+	if err = common.EnsureWrite(filename); err != nil {
+		return nil, err
 	}
 
 	recv := b.Receiver().(wrapper[*jen.File])
-	if err := recv.inner.Save(filename); err != nil {
+	if err = recv.inner.Save(filename); err != nil {
 		return nil, err
 	}
 
