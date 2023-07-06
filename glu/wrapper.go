@@ -16,7 +16,7 @@
  *
  */
 
-package main
+package glu
 
 import (
 	"io"

@@ -16,7 +16,7 @@
  *
  */
 
-package main
+package glu
 
 import (
 	"os"
@@ -30,7 +30,7 @@ var jenFileWrappedType wrappedType
 var jenStatementWrappedType wrappedType
 
 // mutex not needed
-var generatedFilenames []string
+var GeneratedFilenames []string
 
 func jenFile_HeaderComment(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var comment string
@@ -123,7 +123,7 @@ func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 		return nil, err
 	}
 
-	generatedFilenames = append(generatedFilenames, filename)
+	GeneratedFilenames = append(GeneratedFilenames, filename)
 	return starlark.None, nil
 }
 

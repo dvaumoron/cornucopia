@@ -22,9 +22,12 @@ import (
 	"fmt"
 	"os"
 
-	"go.starlark.net/repl"
+	"github.com/dvaumoron/cornucopia/glu"
+	"github.com/dvaumoron/cornucopia/module"
 	"go.starlark.net/starlark"
 )
+
+const defaultRepoUrl = "https://raw.githubusercontent.com/dvaumoron/cornucopiarecipes/main/"
 
 func main() {
 	args := os.Args
@@ -32,22 +35,32 @@ func main() {
 		fmt.Println("Usage:\n  cornucopia [filename]")
 		return
 	}
+	scriptname := args[1]
 
-	load := repl.MakeLoad() // TODO check the utility of a better version
-	thread := &starlark.Thread{Name: "cornucopia", Load: load}
-	initCornucopiaGlobals()
+	// TODO manage config
+	path := ""
+	url := defaultRepoUrl
 
-	_, err := starlark.ExecFile(thread, args[1], nil, nil)
-	if err != nil {
+	loader := module.MakeLoader(path, url)
+	thread := &starlark.Thread{Name: "cornucopia: " + scriptname, Load: loader.Load}
+	glu.InitCornucopiaGlobals()
+
+	if _, err := starlark.ExecFile(thread, scriptname, nil, nil); err != nil {
 		fmt.Println("An error occured :", err)
+		if len(glu.GeneratedFilenames) != 0 {
+			fmt.Println("Before error, the following file have been generated :")
+			for _, filename := range glu.GeneratedFilenames {
+				fmt.Println(filename)
+			}
+		}
 		os.Exit(1)
 	}
 
-	if len(generatedFilenames) == 0 {
+	if len(glu.GeneratedFilenames) == 0 {
 		fmt.Println("Successful without file generation")
 	} else {
 		fmt.Println("Successful, the following file have been generated :")
-		for _, filename := range generatedFilenames {
+		for _, filename := range glu.GeneratedFilenames {
 			fmt.Println(filename)
 		}
 	}

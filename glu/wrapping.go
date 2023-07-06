@@ -1,6 +1,6 @@
 // This file is generated - do not edit.
 
-package main
+package glu
 
 import (
 	jen "github.com/dave/jennifer/jen"

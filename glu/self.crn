@@ -54,7 +54,7 @@ JEN = "github.com/dave/jennifer/jen"
 STARLARK = "go.starlark.net/starlark"
 
 def newFileWithComment():
-    f = NewFile("main")
+    f = NewFile("glu")
     f.HeaderComment("This file is generated - do not edit.")
     return f
 
@@ -144,7 +144,7 @@ def makeLinking():
 
     linking.Line()
 
-    linking.Func().Id("initCornucopiaGlobals").Params().Block(*[declareGlobal(name) for name in sorted(globalNames + commonNames)])
+    linking.Func().Id("InitCornucopiaGlobals").Params().Block(*[declareGlobal(name) for name in sorted(globalNames + commonNames)])
 
     linking.Save("linking.go")
 

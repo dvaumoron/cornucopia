@@ -16,7 +16,7 @@
  *
  */
 
-package main
+package glu
 
 import (
 	"github.com/dave/jennifer/jen"
