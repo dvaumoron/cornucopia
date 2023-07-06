@@ -12,6 +12,6 @@ Moreover, I was not satisfied with jennifer, I like the structuring provided by 
 
 I decided to try something, using a starlark implementation that brings a familiar syntax similar to the Python language (and saves me from reinventing the wheel).
 
-However this leaves a problem, what can I do if I am missing some details of the appearance of the targeted source code? Should I fall back to generative AI? I believe that we can do otherwise, thanks to sharing, that's why I added to Cornucopia the possibility of referring to a common repository of scripts, defaulting to [Cornucopia Recipes](https://github.com/dvaumoron/cornucopiarecipes).
+However this leaves a problem, what can I do if I am missing some details about the targeted source code? Should I fall back to generative AI? I believe that we can do otherwise, thanks to sharing, that's why I added to Cornucopia the possibility of referring to a common repository of scripts, defaulting to [Cornucopia Recipes](https://github.com/dvaumoron/cornucopiarecipes).
 
 I hope you will enjoy and share.
