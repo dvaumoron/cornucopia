@@ -1,3 +1,5 @@
-# cornucopia
+# Cornucopia
+
+<img src="https://github.com/dvaumoron/cornucopia/raw/main/logo/cornucopialogo.png" width="100">
 
 go code generator (beginning by gluing together [starlark-go](https://pkg.go.dev/go.starlark.net/starlark) and [jennifer](https://pkg.go.dev/github.com/dave/jennifer))
