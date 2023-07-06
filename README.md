@@ -30,6 +30,8 @@ will generate a hello.go like [this one](examples/hello.go).
 
 You can change the Hello call to add a string argument and retry, see [hello.crn](https://github.com/dvaumoron/cornucopiarecipes/blob/main/hello.crn) to understand the "hidden" recipe.
 
+A more complex example could be seen [here](glu/self.crn) (used to generate part of Cornucopia internal boilerplate code)
+
 ## License
 
 The Cornucopia project is released under the Apache 2.0 license. See [LICENSE](LICENSE).
