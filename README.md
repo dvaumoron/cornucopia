@@ -15,3 +15,21 @@ I decided to try something, using a starlark implementation that brings a famili
 However this leaves a problem, what can I do if I am missing some details about the targeted source code? Should I fall back to generative AI? I believe that we can do otherwise, thanks to sharing, that's why I added to Cornucopia the possibility of referring to a common repository of scripts, defaulting to [Cornucopia Recipes](https://github.com/dvaumoron/cornucopiarecipes).
 
 I hope you will enjoy and share.
+
+## Getting started
+
+In order to install Cornucopia (with the go langage already installed), you can use the command: 
+
+    go install github.com/dvaumoron/cornucopia@latest
+
+With a file test.crn similar to [this example](examples/test.crn) in your current directory, the command :
+
+    cornucopia test.crn
+
+will generate a hello.go like [this one](examples/hello.go).
+
+You can change the function call to add a string argument and retry, see [hello.crn](https://github.com/dvaumoron/cornucopiarecipes/hello.crn) to understand the "hidden" recipe.
+
+## License
+
+The Cornucopia project is released under the Apache 2.0 license. See [LICENSE](LICENSE).
