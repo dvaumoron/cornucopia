@@ -21,6 +21,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/dvaumoron/cornucopia/glu"
 	"github.com/dvaumoron/cornucopia/module"
@@ -28,6 +29,9 @@ import (
 )
 
 const defaultRepoUrl = "https://raw.githubusercontent.com/dvaumoron/cornucopiarecipes/main/"
+
+const msgErr = "An error occured :"
+const prefix = "cornucopia: "
 
 func main() {
 	args := os.Args
@@ -37,16 +41,17 @@ func main() {
 	}
 	scriptname := args[1]
 
-	// TODO manage config
-	path := ""
-	url := defaultRepoUrl
+	c, err := loadConfig()
+	if err != nil {
+		fmt.Println(msgErr, err)
+	}
 
-	loader := module.MakeLoader(path, url)
-	thread := &starlark.Thread{Name: "cornucopia: " + scriptname, Load: loader.Load}
+	loader := module.MakeLoader(prefix, c.repoPath, c.repoUrl)
+	thread := &starlark.Thread{Name: prefix + scriptname, Load: loader.Load}
 	glu.InitCornucopiaGlobals()
 
-	if _, err := starlark.ExecFile(thread, scriptname, nil, nil); err != nil {
-		fmt.Println("An error occured :", err)
+	if _, err = starlark.ExecFile(thread, scriptname, nil, nil); err != nil {
+		fmt.Println(msgErr, err)
 		if len(glu.GeneratedFilenames) != 0 {
 			fmt.Println("Before error, the following file have been generated :")
 			for _, filename := range glu.GeneratedFilenames {
@@ -64,4 +69,26 @@ func main() {
 			fmt.Println(filename)
 		}
 	}
+}
+
+type config struct {
+	repoPath string
+	repoUrl  string
+}
+
+func loadConfig() (config, error) {
+	repoPath := os.Getenv("CORNUCOPIA_REPO_PATH")
+	if repoPath == "" {
+		userHome, err := os.UserHomeDir()
+		if err != nil {
+			return config{}, err
+		}
+		repoPath = path.Join(userHome, ".cornucopia", "recipes")
+	}
+
+	repoUrl := os.Getenv("CORNUCOPIA_REPO_URL")
+	if repoUrl == "" {
+		repoUrl = defaultRepoUrl
+	}
+	return config{repoPath: repoPath, repoUrl: repoUrl}, nil
 }

@@ -19,7 +19,13 @@
 package module
 
 import (
+	"crypto/tls"
 	"errors"
+	"io"
+	"net/http"
+	"net/url"
+	"os"
+	"path"
 
 	"go.starlark.net/starlark"
 )
@@ -32,13 +38,14 @@ type entry struct {
 }
 
 type ModuleLoader struct {
-	cache map[string]*entry
-	path  string
-	url   string
+	threadPrefix string
+	path         string
+	url          string
+	cache        map[string]*entry
 }
 
-func MakeLoader(repositoryPath string, repositoryUrl string) ModuleLoader {
-	return ModuleLoader{cache: map[string]*entry{}, path: repositoryPath, url: repositoryUrl}
+func MakeLoader(threadPrefix string, repositoryPath string, repositoryUrl string) ModuleLoader {
+	return ModuleLoader{threadPrefix: threadPrefix, path: repositoryPath, url: repositoryUrl, cache: map[string]*entry{}}
 }
 
 func (ml ModuleLoader) Load(thread *starlark.Thread, modulename string) (starlark.StringDict, error) {
@@ -52,12 +59,14 @@ func (ml ModuleLoader) Load(thread *starlark.Thread, modulename string) (starlar
 		// Add a placeholder to indicate "load in progress".
 		ml.cache[modulename] = nil
 
-		src := ml.read(modulename)
-
-		// Load it.
-		thread := &starlark.Thread{Name: "cornucopia: " + modulename, Load: thread.Load}
-		globals, err := starlark.ExecFile(thread, modulename, src, nil)
-		e = &entry{globals, err}
+		e = &entry{}
+		var src []byte
+		src, e.err = ml.read(modulename)
+		if e.err == nil {
+			// Load it.
+			thread := &starlark.Thread{Name: ml.threadPrefix + modulename, Load: thread.Load}
+			e.globals, e.err = starlark.ExecFile(thread, modulename, src, nil)
+		}
 
 		// Update the cache.
 		ml.cache[modulename] = e
@@ -69,7 +78,58 @@ func (ml ModuleLoader) Load(thread *starlark.Thread, modulename string) (starlar
 //   - read from current directory as base path
 //   - read from local repository path as base path
 //   - download from repository url and write the content in local repository path
-func (ml ModuleLoader) read(modulename string) []byte {
-	// TODO
-	return nil
+func (ml ModuleLoader) read(modulename string) ([]byte, error) {
+	currentPath, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := os.ReadFile(path.Join(currentPath, modulename))
+	if err == nil {
+		return data, nil
+	}
+
+	repoPath := path.Join(ml.path, modulename)
+	data, err = os.ReadFile(repoPath)
+	if err == nil {
+		return data, nil
+	}
+
+	dUrl, err := url.JoinPath(ml.url, modulename)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err = unsecureDownload(dUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = os.WriteFile(repoPath, data, 0644); err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func unsecureDownload(dUrl string) ([]byte, error) {
+	client := http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+
+	resp, err := client.Get(dUrl)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// supposing module will not be "too big"
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return body, nil
 }
