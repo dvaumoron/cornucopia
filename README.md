@@ -28,7 +28,7 @@ With a file test.crn similar to [this example](examples/test.crn) in your curren
 
 will generate a hello.go like [this one](examples/hello.go).
 
-You can change the function call to add a string argument and retry, see [hello.crn](https://github.com/dvaumoron/cornucopiarecipes/blob/main/hello.crn) to understand the "hidden" recipe.
+You can change the Hello call to add a string argument and retry, see [hello.crn](https://github.com/dvaumoron/cornucopiarecipes/blob/main/hello.crn) to understand the "hidden" recipe.
 
 ## License
 
