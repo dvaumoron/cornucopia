@@ -2,7 +2,7 @@
 
 <img src="https://github.com/dvaumoron/cornucopia/raw/main/logo/cornucopialogo.png" width="100">
 
-Cornucopia is a go code generation tool (gluing together [starlark-go](https://pkg.go.dev/go.starlark.net/starlark) and [jennifer](https://pkg.go.dev/github.com/dave/jennifer))
+Cornucopia is a go code generation tool with [shared scripts](https://github.com/dvaumoron/cornucopiarecipes) (gluing together [starlark-go](https://pkg.go.dev/go.starlark.net/starlark) and [jennifer](https://pkg.go.dev/github.com/dave/jennifer))
 
 ## Why ?
 
