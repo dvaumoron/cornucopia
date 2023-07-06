@@ -23,6 +23,7 @@ import (
 	"strings"
 )
 
+// Create the parents directories if needed and write the file
 func WriteFile(path string, data []byte) error {
 	if err := EnsureWrite(path); err != nil {
 		return err
@@ -31,6 +32,7 @@ func WriteFile(path string, data []byte) error {
 	return os.WriteFile(path, data, 0644)
 }
 
+// Create the parents directories if needed
 func EnsureWrite(path string) error {
 	if index := strings.LastIndexByte(path, '/'); index != -1 {
 		if err := os.MkdirAll(path[:index], 0755); err != nil {
