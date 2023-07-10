@@ -27,6 +27,8 @@ import (
 	"go.starlark.net/starlark"
 )
 
+//go:generate cornucopia self.crn
+
 var errForbidAbsolute = errors.New("writing on an absolute path is forbidden")
 
 var jenFileWrappedType wrappedType
