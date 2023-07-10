@@ -6,7 +6,7 @@ Cornucopia is a go code generation tool with [shared scripts](https://github.com
 
 ## Why ?
 
-you don't like writing boilerplate code and find that Golang has no macro preprocessor, admittedly now that it has generics many use cases are gone, for others there is still `go generate`, but this one doesn't do anything by itself.
+You don't like writing boilerplate code and find that Golang has no macro preprocessor, admittedly now that it has generics many use cases are gone, for others there is still [`go generate`](https://go.dev/blog/generate), but this one doesn't do anything by itself.
 
 You need a code generation tool, you need Cornucopia.
 
