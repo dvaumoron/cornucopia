@@ -50,6 +50,15 @@ You can change the Hello call to add a string argument and retry, see [hello.crn
 
 A more complex example could be seen [here](glu/self.crn) (used to generate part of Cornucopia internal boilerplate code)
 
+## Language Reference
+
+On top of the [Starlark specification](https://github.com/google/starlark-go/blob/master/doc/spec.md), Cornucopia add a load implementation and allows to call some part of the [jennifer API](https://pkg.go.dev/github.com/dave/jennifer).
+
+The Cornucopia load implementation try the following resolution to find a an external script :
+- read from current directory
+- read from local repository path (environment variable `CORNUCOPIA_REPO_PATH`, default is `$HOME/.cornucopia/recipes`)
+- download from repository url (environment variable `CORNUCOPIA_REPO_URL`, default is `https://raw.githubusercontent.com/dvaumoron/cornucopiarecipes/main/`) and write the content in local repository path
+
 ## License
 
 The Cornucopia project is released under the Apache 2.0 license. See [LICENSE](LICENSE).
