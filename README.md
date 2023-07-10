@@ -26,11 +26,25 @@ In order to install Cornucopia (with the go langage already installed), you can 
 
     go install github.com/dvaumoron/cornucopia@latest
 
-With a file test.crn similar to [this example](examples/test.crn) in your current directory, the command :
+Create a file test.crn in your current directory similar to :
 
-    cornucopia test.crn
+```Python
+load("hello.crn", "Hello")
 
-will generate a hello.go like [this one](examples/hello.go).
+Hello()
+```
+
+And launch the command `cornucopia test.crn` (or a `go generate` command with a directive `//go:generate cornucopia test.crn` in one of the go file in the current directory). This will generate a hello.go like :
+
+```Go
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello world !")
+}
+```
 
 You can change the Hello call to add a string argument and retry, see [hello.crn](https://github.com/dvaumoron/cornucopiarecipes/blob/main/hello.crn) to understand the "hidden" recipe.
 
