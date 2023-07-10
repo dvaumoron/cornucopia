@@ -57,7 +57,7 @@ On top of the [Starlark specification](https://github.com/google/starlark-go/blo
 The Cornucopia load implementation try the following resolution to find a an external script :
 - read from current directory
 - read from local repository path (environment variable `CORNUCOPIA_REPO_PATH`, default is `$HOME/.cornucopia/recipes`)
-- download from repository url (environment variable `CORNUCOPIA_REPO_URL`, default is `https://raw.githubusercontent.com/dvaumoron/cornucopiarecipes/main/`) and write the content in local repository path
+- download from repository url (environment variable `CORNUCOPIA_REPO_URL`, default link to [Cornucopia Recipes](https://github.com/dvaumoron/cornucopiarecipes)) and write the content in local repository path
 
 ## License
 
