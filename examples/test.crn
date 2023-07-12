@@ -2,3 +2,17 @@
 load("hello.crn", "Hello")
 
 Hello()
+
+load("dvaumoron/sql.crn", "RowQueryerContext", "ConverterFunc","ConvertedResultQueryFunc")
+
+f = NewFile("model")
+
+RowQueryerContext(f, "RowQueryerContext")
+
+converterTypes = {"name": String(),"email": String()}
+
+ConverterFunc(f, "MakeUser", converterTypes, Id("User"))
+
+ConvertedResultQueryFunc(f, "QueryUser", 5, "select u.name, u.email from user as u where u.id = :id;", Id("RowQueryerContext"), {"id": Int64()}, converterTypes, Id("MakeUser"), Id("User"))
+
+f.Save("model/model.go")
