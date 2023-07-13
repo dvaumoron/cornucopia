@@ -9,6 +9,8 @@ load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "ExecFunc", "Con
 f = NewFile("model")
 f.HeaderComment("Generated from ../test.crn - do not edit.")
 
+f.Const().Id("timeout").Op("=").Qual("time", "Duration").Call(5).Op("*").Qual("time", "Second")
+
 # interfaces allowing *sql.DB or *sql.Tx
 
 ExecerContext(f, "ExecerContext")
@@ -28,14 +30,16 @@ MakeFunc(f, "MakeUser", userFields, Id("User"))
 f.Line()
 
 ExecFunc(
-    file=f, name="SaveUser", timeOutSec=5, query="insert into users(name, email) values(:Name, :Email)",
+    file=f, name="SaveUser", timeOutDuration=Id("timeout"),
+    query="insert into users(name, email) values(:Name, :Email)",
     poolType=Id("ExecerContext"), inputTypes=userFields,
 )
 
 f.Line()
 
 ConvertedResultQueryFunc(
-    file=f, name="QueryUser", timeOutSec=5, query="select u.name, u.email from user as u where u.name = :name;",
+    file=f, name="QueryUser", timeOutDuration=Id("timeout"),
+    query="select u.name, u.email from user as u where u.name = :name;",
     poolType=Id("RowQueryerContext"), inputTypes={"name": String()}, queryResultType=userFields,
     converter=Id("MakeUser"), outputType=Id("User"),
 )

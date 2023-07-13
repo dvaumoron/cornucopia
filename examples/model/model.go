@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const timeout = time.Duration(int64(5)) * time.Second
+
 type ExecerContext interface {
 	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
 }
@@ -29,7 +31,7 @@ func MakeUser(Name string, Email string) User {
 }
 
 func SaveUser(pool ExecerContext, ctx context.Context, Name string, Email string) (int64, error) {
-	ctx, cancel := context.WithTimeout(ctx, time.Duration(int64(5))*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	result, err := pool.ExecContext(ctx, "insert into users(name, email) values(:Name, :Email)", sql.Named("Name", Name), sql.Named("Email", Email))
@@ -40,7 +42,7 @@ func SaveUser(pool ExecerContext, ctx context.Context, Name string, Email string
 }
 
 func QueryUser(pool RowQueryerContext, ctx context.Context, name string) (User, error) {
-	ctx, cancel := context.WithTimeout(ctx, time.Duration(int64(5))*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	var Name string
