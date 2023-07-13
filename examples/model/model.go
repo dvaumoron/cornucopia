@@ -23,10 +23,10 @@ type User struct {
 	Email string
 }
 
-func MakeUser(Name string, Email string) User {
+func MakeUser(name string, email string) User {
 	return User{
-		Email: Email,
-		Name:  Name,
+		Email: email,
+		Name:  name,
 	}
 }
 
