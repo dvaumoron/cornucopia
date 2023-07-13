@@ -8,13 +8,18 @@ load("dvaumoron/sql.crn", "RowQueryerContext", "ConvertedResultQueryFunc")
 
 f = NewFile("model")
 
+# there is no interface for this method in datbase/sql/driver
 RowQueryerContext(f, "RowQueryerContext")
+
+f.Line()
 
 userFields = {"Name": String(),"Email": String()}
 
 StructType(f, "User", namedFields=userFields)
 
 MakeFunc(f, "MakeUser", userFields, Id("User"))
+
+f.Line()
 
 ConvertedResultQueryFunc(
     file=f, name="QueryUser", timeOutSec=5, query="select u.name, u.email from user as u where u.name = :name;",
