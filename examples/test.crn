@@ -4,7 +4,7 @@ load("hello.crn", "Hello")
 Hello()
 
 load("dvaumoron/main.crn", "StructType", "MakeFunc")
-load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "ExecFunc", "ConvertedResultQueryFunc")
+load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "CRUD")
 
 f = NewFile("model")
 f.HeaderComment("Generated from ../test.crn - do not edit.")
@@ -21,27 +21,16 @@ RowQueryerContext(f, "RowQueryerContext")
 
 f.Line()
 
-userFields = {"Name": String(),"Email": String()}
+userFields = {
+    "Name": String(),
+    "Email": String(),
+}
 
-StructType(f, "User", namedFields=userFields)
-
-MakeFunc(f, "MakeUser", userFields, Id("User"))
-
-f.Line()
-
-ExecFunc(
-    file=f, name="SaveUser", timeOutDuration=Id("timeout"),
-    query="insert into users(name, email) values(:Name, :Email)",
-    poolType=Id("ExecerContext"), inputTypes=userFields,
-)
-
-f.Line()
-
-ConvertedResultQueryFunc(
-    file=f, name="GetUserByName", timeOutDuration=Id("timeout"),
-    query="select u.name, u.email from users as u where u.name = :name;",
-    poolType=Id("RowQueryerContext"), inputTypes={"name": String()}, queryResultType=userFields,
-    converter=Id("MakeUser"), outputType=Id("User"),
+CRUD(
+    f, "User",
+    fields=userFields, primaryKey="Name",
+    timeOutDuration = Id("timeout"),
+    execerContext=Id("ExecerContext"), rowQueryerContext=Id("RowQueryerContext")
 )
 
 f.Save("model/model.go")
