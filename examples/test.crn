@@ -20,14 +20,11 @@ RowQueryerContext(f, "RowQueryerContext")
 
 f.Line()
 
-userFields = {
-    "Name": String(),
-    "Email": String(),
-}
-
 CRUD(
-    f, "User",
-    fields=userFields, primaryKey="Name",
+    f, "User", primaryKey="Name", fields= {
+        "Name": String(),
+        "Email": String(),
+    },
     timeOutDuration = Id("timeout"),
     execerContext=Id("ExecerContext"), rowQueryerContext=Id("RowQueryerContext")
 )
