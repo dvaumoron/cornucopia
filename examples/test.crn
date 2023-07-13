@@ -4,11 +4,16 @@ load("hello.crn", "Hello")
 Hello()
 
 load("dvaumoron/main.crn", "StructType", "MakeFunc")
-load("dvaumoron/sql.crn", "RowQueryerContext", "ConvertedResultQueryFunc")
+load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "ExecFunc", "ConvertedResultQueryFunc")
 
 f = NewFile("model")
 
-# there is no interface for this method in datbase/sql/driver
+# interfaces allowing *sql.DB or *sql.Tx
+
+ExecerContext(f, "ExecerContext")
+
+f.Line()
+
 RowQueryerContext(f, "RowQueryerContext")
 
 f.Line()
@@ -18,6 +23,13 @@ userFields = {"Name": String(),"Email": String()}
 StructType(f, "User", namedFields=userFields)
 
 MakeFunc(f, "MakeUser", userFields, Id("User"))
+
+f.Line()
+
+ExecFunc(
+    file=f, name="SaveUser", timeOutSec=5, query="insert into users(name, email) values(:Name, :Email)",
+    poolType=Id("ExecerContext"), inputTypes=userFields,
+)
 
 f.Line()
 
