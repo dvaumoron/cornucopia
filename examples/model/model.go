@@ -41,7 +41,7 @@ func SaveUser(pool ExecerContext, ctx context.Context, Name string, Email string
 	return result.RowsAffected()
 }
 
-func QueryUser(pool RowQueryerContext, ctx context.Context, name string) (User, error) {
+func GetUserByName(pool RowQueryerContext, ctx context.Context, name string) (User, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
