@@ -1,3 +1,5 @@
+// Generated from ../test.crn - do not edit.
+
 package model
 
 import (
