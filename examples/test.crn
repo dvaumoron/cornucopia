@@ -21,7 +21,7 @@ RowQueryerContext(f, "RowQueryerContext")
 f.Line()
 
 CRUD(
-    f, "User", primaryKey="Name", fields= {
+    f, "User", primaryKey="Name", fields={
         "Name": String(),
         "Email": String(),
     },
