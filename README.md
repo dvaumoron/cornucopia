@@ -52,7 +52,7 @@ A more complex example could be seen [here](glu/self.crn) (used to generate part
 
 ## Language Reference
 
-On top of the [Starlark specification](https://github.com/google/starlark-go/blob/master/doc/spec.md), Cornucopia add a load implementation and allows to call some part of the [jennifer API](https://pkg.go.dev/github.com/dave/jennifer).
+On top of the [Starlark specification](https://github.com/google/starlark-go/blob/master/doc/spec.md), Cornucopia add a load implementation and allows to call some part of the [jennifer API](https://pkg.go.dev/github.com/dave/jennifer/jen).
 
 The Cornucopia load implementation try the following resolution to find a an external script :
 - read from current directory
