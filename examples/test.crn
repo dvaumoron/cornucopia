@@ -3,16 +3,23 @@ load("hello.crn", "Hello")
 
 Hello()
 
-load("dvaumoron/sql.crn", "RowQueryerContext", "ConverterFunc","ConvertedResultQueryFunc")
+load("dvaumoron/main.crn", "StructType", "MakeFunc")
+load("dvaumoron/sql.crn", "RowQueryerContext", "ConvertedResultQueryFunc")
 
 f = NewFile("model")
 
 RowQueryerContext(f, "RowQueryerContext")
 
-converterTypes = {"name": String(),"email": String()}
+userFields = {"Name": String(),"Email": String()}
 
-ConverterFunc(f, "MakeUser", converterTypes, Id("User"))
+StructType(f, "User", namedFields=userFields)
 
-ConvertedResultQueryFunc(f, "QueryUser", 5, "select u.name, u.email from user as u where u.id = :id;", Id("RowQueryerContext"), {"id": Int64()}, converterTypes, Id("MakeUser"), Id("User"))
+MakeFunc(f, "MakeUser", userFields, Id("User"))
+
+ConvertedResultQueryFunc(
+    file=f, name="QueryUser", timeOutSec=5, query="select u.name, u.email from user as u where u.name = :name;",
+    poolType=Id("RowQueryerContext"), inputTypes={"name": String()}, queryResultType=userFields,
+    converter=Id("MakeUser"), outputType=Id("User"),
+)
 
 f.Save("model/model.go")
