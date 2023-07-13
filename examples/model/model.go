@@ -47,6 +47,6 @@ func GetUserByName(pool RowQueryerContext, ctx context.Context, name string) (Us
 
 	var Name string
 	var Email string
-	err := pool.QueryRowContext(ctx, "select u.name, u.email from user as u where u.name = :name;", sql.Named("name", name)).Scan(&Name, &Email)
+	err := pool.QueryRowContext(ctx, "select u.name, u.email from users as u where u.name = :name;", sql.Named("name", name)).Scan(&Name, &Email)
 	return MakeUser(Name, Email), err
 }

@@ -39,7 +39,7 @@ f.Line()
 
 ConvertedResultQueryFunc(
     file=f, name="GetUserByName", timeOutDuration=Id("timeout"),
-    query="select u.name, u.email from user as u where u.name = :name;",
+    query="select u.name, u.email from users as u where u.name = :name;",
     poolType=Id("RowQueryerContext"), inputTypes={"name": String()}, queryResultType=userFields,
     converter=Id("MakeUser"), outputType=Id("User"),
 )
