@@ -3,7 +3,6 @@ load("hello.crn", "Hello")
 
 Hello()
 
-load("dvaumoron/main.crn", "StructType", "MakeFunc")
 load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "CRUD")
 
 f = NewFile("model")
