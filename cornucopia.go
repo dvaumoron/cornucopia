@@ -34,6 +34,7 @@ const msgErr = "An error occured :"
 const prefix = "cornucopia: "
 
 func main() {
+	// TODO flag to force download in module resolution (using Cobra ?)
 	args := os.Args
 	if len(args) < 2 {
 		fmt.Println("Usage:\n  cornucopia [filename]")
@@ -78,6 +79,7 @@ type config struct {
 }
 
 func loadConfig() (config, error) {
+	// TODO allowing flag too ?
 	repoPath := os.Getenv("CORNUCOPIA_REPO_PATH")
 	if repoPath == "" {
 		userHome, err := os.UserHomeDir()
