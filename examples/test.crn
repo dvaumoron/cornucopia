@@ -5,7 +5,6 @@ Hello()
 
 load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "QueryerContext", "CRUD", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
 
-
 def newModelFile():
     f = NewFile("model")
     f.HeaderComment("Generated from ../test.crn - do not edit.")
