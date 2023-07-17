@@ -5,31 +5,38 @@ Hello()
 
 load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "QueryerContext", "CRUD", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
 
-f = NewFile("model")
-f.HeaderComment("Generated from ../test.crn - do not edit.")
 
-f.Const().Id("timeout").Op("=").Qual("time", "Duration").Call(5).Op("*").Qual("time", "Second")
+def newModelFile():
+    f = NewFile("model")
+    f.HeaderComment("Generated from ../test.crn - do not edit.")
+    return f
+
+commonFile = newModelFile()
+
+commonFile.Const().Id("timeout").Op("=").Qual("time", "Duration").Call(5).Op("*").Qual("time", "Second")
 
 # interfaces allowing *sql.DB or *sql.Tx
 
-ExecerContext(f, "ExecerContext")
+ExecerContext(commonFile, "ExecerContext")
 
-f.Line()
+commonFile.Line()
 
-RowQueryerContext(f, "RowQueryerContext")
+RowQueryerContext(commonFile, "RowQueryerContext")
 
-f.Line()
+commonFile.Line()
 
-QueryerContext(f, "QueryerContext")
+QueryerContext(commonFile, "QueryerContext")
 
-f.Line()
+commonFile.Save("model/common.go")
 
 execerContext=Id("ExecerContext")
 rowQueryerContext = Id("RowQueryerContext")
 queryerContext = Id("QueryerContext")
 
+userFile = newModelFile()
+
 userType, userBuilder = CRUD(
-    f, "User", primaryKey="Login", fields={
+    userFile, "User", primaryKey="Login", fields={
         "Login": String(),
         "Firstname": String(),
         "Lastname": String(),
@@ -39,36 +46,39 @@ userType, userBuilder = CRUD(
     execerContext=execerContext, rowQueryerContext=rowQueryerContext
 )
 
+userFile.Line()
+
 messageFields={
     "Id": Int64(),
     "UserLogin": String(),
     "Content": String(),
 }
 
+messageFile = newModelFile()
+
 messageType, messageBuilder = CRUD(
-    f, "Message", primaryKey="Id", fields=messageFields,
+    messageFile, "Message", primaryKey="Id", fields=messageFields,
     timeOutDuration=Id("timeout"),
     execerContext=execerContext, rowQueryerContext=Id("RowQueryerContext")
 )
 
-f.Line()
+messageFile.Line()
 
 queryMessagesName = "getMessagesByUserLogin"
 
 MultiConvertedResultQueryFunc(
-    f, queryMessagesName,
+    messageFile, queryMessagesName,
     query="select o.id, o.userLogin, o.content from messages as o where o.userLogin = :login;",
     timeOutDuration=Id("timeout"), poolType=queryerContext, inputTypes={"login": String()}, queryResultType=messageFields,
     converter=Id(messageBuilder), outputType=messageType,
 )
 
-f.Line()
-
 ForeignKeyMethod(
-    f, userType,
+    userFile, userType,
     methodName="GetMessages",
     functionName=queryMessagesName, foreignKey="Login",
     outputType=messageType, queryerContext=queryerContext,
 )
 
-f.Save("model/model.go")
+userFile.Save("model/user.go")
+messageFile.Save("model/message.go")
