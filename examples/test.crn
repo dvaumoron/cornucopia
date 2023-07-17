@@ -21,8 +21,10 @@ RowQueryerContext(f, "RowQueryerContext")
 f.Line()
 
 CRUD(
-    f, "User", primaryKey="Name", fields={
-        "Name": String(),
+    f, "User", primaryKey="Login", fields={
+        "Login": String(),
+        "Firstname": String(),
+        "Lastname": String(),
         "Email": String(),
     },
     timeOutDuration = Id("timeout"),
