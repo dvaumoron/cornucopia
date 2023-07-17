@@ -33,6 +33,8 @@ execerContext=Id("ExecerContext")
 rowQueryerContext = Id("RowQueryerContext")
 queryerContext = Id("QueryerContext")
 
+timeOutDuration = Id("timeout")
+
 userFile = newModelFile()
 
 userType, userBuilder = CRUD(
@@ -42,7 +44,7 @@ userType, userBuilder = CRUD(
         "Lastname": String(),
         "Email": String(),
     },
-    timeOutDuration = Id("timeout"),
+    timeOutDuration=timeOutDuration,
     execerContext=execerContext, rowQueryerContext=rowQueryerContext
 )
 
@@ -58,7 +60,7 @@ messageFile = newModelFile()
 
 messageType, messageBuilder = CRUD(
     messageFile, "Message", primaryKey="Id", fields=messageFields,
-    timeOutDuration=Id("timeout"),
+    timeOutDuration=timeOutDuration,
     execerContext=execerContext, rowQueryerContext=Id("RowQueryerContext")
 )
 
@@ -69,7 +71,7 @@ queryMessagesName = "getMessagesByUserLogin"
 MultiConvertedResultQueryFunc(
     messageFile, queryMessagesName,
     query="select o.id, o.userLogin, o.content from messages as o where o.userLogin = :login;",
-    timeOutDuration=Id("timeout"), poolType=queryerContext, inputTypes={"login": String()}, queryResultType=messageFields,
+    timeOutDuration=timeOutDuration, poolType=queryerContext, inputTypes={"login": String()}, queryResultType=messageFields,
     converter=Id(messageBuilder), outputType=messageType,
 )
 
