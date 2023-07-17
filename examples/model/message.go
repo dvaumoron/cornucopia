@@ -103,3 +103,7 @@ func getMessagesByUserLogin(pool QueryerContext, ctx context.Context, login stri
 	}
 	return res, nil
 }
+
+func (o Message) GetUser(pool RowQueryerContext, ctx context.Context) (User, error) {
+	return ReadUser(pool, ctx, o.UserLogin)
+}

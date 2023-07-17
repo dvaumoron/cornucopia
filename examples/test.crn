@@ -74,11 +74,20 @@ MultiConvertedResultQueryFunc(
     converter=Id(messageBuilder), outputType=messageType,
 )
 
+messageFile.Line()
+
 ForeignKeyMethod(
     userFile, userType,
     methodName="GetMessages",
     functionName=queryMessagesName, foreignKey="Login",
     outputType=messageType, queryerContext=queryerContext,
+)
+
+ForeignKeyMethod(
+    messageFile, messageType,
+    methodName="GetUser", multi=False,
+    functionName="ReadUser", foreignKey="UserLogin",
+    outputType=userType, queryerContext=rowQueryerContext,
 )
 
 userFile.Save("model/user.go")
