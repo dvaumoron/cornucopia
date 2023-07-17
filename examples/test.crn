@@ -3,7 +3,7 @@ load("hello.crn", "Hello")
 
 Hello()
 
-load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "CRUD")
+load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "QueryerContext", "CRUD", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
 
 f = NewFile("model")
 f.HeaderComment("Generated from ../test.crn - do not edit.")
@@ -20,7 +20,15 @@ RowQueryerContext(f, "RowQueryerContext")
 
 f.Line()
 
-CRUD(
+QueryerContext(f, "QueryerContext")
+
+f.Line()
+
+execerContext=Id("ExecerContext")
+rowQueryerContext = Id("RowQueryerContext")
+queryerContext = Id("QueryerContext")
+
+userType, userBuilder = CRUD(
     f, "User", primaryKey="Login", fields={
         "Login": String(),
         "Firstname": String(),
@@ -28,7 +36,39 @@ CRUD(
         "Email": String(),
     },
     timeOutDuration = Id("timeout"),
-    execerContext=Id("ExecerContext"), rowQueryerContext=Id("RowQueryerContext")
+    execerContext=execerContext, rowQueryerContext=rowQueryerContext
+)
+
+messageFields={
+    "Id": Int64(),
+    "UserLogin": String(),
+    "Content": String(),
+}
+
+messageType, messageBuilder = CRUD(
+    f, "Message", primaryKey="Id", fields=messageFields,
+    timeOutDuration=Id("timeout"),
+    execerContext=execerContext, rowQueryerContext=Id("RowQueryerContext")
+)
+
+f.Line()
+
+queryMessagesName = "getMessagesByUserLogin"
+
+MultiConvertedResultQueryFunc(
+    f, queryMessagesName,
+    query="select o.id, o.userLogin, o.content from messages as o where o.userLogin = :login;",
+    timeOutDuration=Id("timeout"), poolType=queryerContext, inputTypes={"login": String()}, queryResultType=messageFields,
+    converter=Id(messageBuilder), outputType=messageType,
+)
+
+f.Line()
+
+ForeignKeyMethod(
+    f, userType,
+    methodName="GetMessages",
+    functionName=queryMessagesName, foreignKey="Login",
+    outputType=messageType, queryerContext=queryerContext,
 )
 
 f.Save("model/model.go")
