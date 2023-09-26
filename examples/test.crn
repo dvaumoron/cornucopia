@@ -28,7 +28,7 @@ QueryerContext(commonFile, "QueryerContext")
 
 commonFile.Save("model/common.go")
 
-execerContext=Id("ExecerContext")
+execerContext = Id("ExecerContext")
 rowQueryerContext = Id("RowQueryerContext")
 queryerContext = Id("QueryerContext")
 
