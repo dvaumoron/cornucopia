@@ -32,7 +32,7 @@ import (
 
 var conf config.Config
 
-func InitCmd() *cobra.Command {
+func Init() *cobra.Command {
 	envRepoPath := os.Getenv("CORNUCOPIA_REPO_PATH")
 	envRepoUrl := os.Getenv("CORNUCOPIA_REPO_URL")
 
@@ -43,23 +43,19 @@ func InitCmd() *cobra.Command {
 https://github.com/dvaumoron/cornucopia`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			err := conf.InitEmpty(envRepoPath, envRepoUrl)
+			err := conf.InitEmptyFields(envRepoPath, envRepoUrl)
 			if err != nil {
 				return err
 			}
 
 			scriptname := args[0]
-
-			loader := module.MakeLoader(common.Prefix, conf)
+			loader := module.MakeLoader(common.Prefix, &conf)
 			thread := &starlark.Thread{Name: common.Prefix + scriptname, Load: loader.Load}
 			glu.InitCornucopiaGlobals()
 
 			if _, err = starlark.ExecFile(thread, scriptname, nil, nil); err != nil {
 				if len(glu.GeneratedFilenames) != 0 {
-					fmt.Println("Before error, the following file have been generated :")
-					for _, filename := range glu.GeneratedFilenames {
-						fmt.Println(filename)
-					}
+					displayGeneratedFileNames("Before error, the following file have been generated :")
 				}
 				return err
 			}
@@ -67,10 +63,7 @@ https://github.com/dvaumoron/cornucopia`,
 			if len(glu.GeneratedFilenames) == 0 {
 				fmt.Println("Successful without file generation")
 			} else {
-				fmt.Println("Successful, the following file have been generated :")
-				for _, filename := range glu.GeneratedFilenames {
-					fmt.Println(filename)
-				}
+				displayGeneratedFileNames("Successful, the following file have been generated :")
 			}
 			return nil
 		},
@@ -82,4 +75,11 @@ https://github.com/dvaumoron/cornucopia`,
 	cmdFlags.BoolVarP(&conf.ForceDownload, "force-download", "f", false, "Force download in module resolution")
 
 	return cmd
+}
+
+func displayGeneratedFileNames(msg string) {
+	fmt.Println(msg)
+	for _, fileName := range glu.GeneratedFilenames {
+		fmt.Println(fileName)
+	}
 }

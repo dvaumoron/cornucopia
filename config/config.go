@@ -31,7 +31,7 @@ type Config struct {
 	ForceDownload bool
 }
 
-func (c *Config) InitEmpty(envRepoPath string, envRepoUrl string) error {
+func (c *Config) InitEmptyFields(envRepoPath string, envRepoUrl string) error {
 	if c.RepoPath == "" {
 		if envRepoPath == "" {
 			userHome, err := os.UserHomeDir()

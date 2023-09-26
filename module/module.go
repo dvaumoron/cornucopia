@@ -41,11 +41,11 @@ type entry struct {
 
 type ModuleLoader struct {
 	threadPrefix string
-	conf         config.Config
+	conf         *config.Config
 	cache        map[string]*entry
 }
 
-func MakeLoader(threadPrefix string, conf config.Config) ModuleLoader {
+func MakeLoader(threadPrefix string, conf *config.Config) ModuleLoader {
 	return ModuleLoader{threadPrefix: threadPrefix, conf: conf, cache: map[string]*entry{}}
 }
 

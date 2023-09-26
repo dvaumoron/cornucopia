@@ -37,9 +37,7 @@ func WriteFile(path string, data []byte) error {
 // Create the parents directories if needed
 func EnsureWrite(path string) error {
 	if index := strings.LastIndexByte(path, '/'); index != -1 {
-		if err := os.MkdirAll(path[:index], 0755); err != nil {
-			return err
-		}
+		return os.MkdirAll(path[:index], 0755)
 	}
 	return nil
 }
