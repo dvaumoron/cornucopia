@@ -20,7 +20,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/dvaumoron/cornucopia/common"
 	"github.com/dvaumoron/cornucopia/config"
@@ -33,8 +32,7 @@ import (
 var conf config.Config
 
 func Init() *cobra.Command {
-	envRepoPath := os.Getenv("CORNUCOPIA_REPO_PATH")
-	envRepoUrl := os.Getenv("CORNUCOPIA_REPO_URL")
+	defaultRepoPath, defaultRepoUrl, err := config.InitDefault("CORNUCOPIA_REPO_PATH", "CORNUCOPIA_REPO_URL")
 
 	cmd := &cobra.Command{
 		Use:   "cornucopia scriptname",
@@ -42,8 +40,7 @@ func Init() *cobra.Command {
 		Long: `cornucopia run a code generation script, find more details at :
 https://github.com/dvaumoron/cornucopia`,
 		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			err := conf.InitEmptyFields(envRepoPath, envRepoUrl)
+		RunE: func(_ *cobra.Command, args []string) error {
 			if err != nil {
 				return err
 			}
@@ -70,8 +67,8 @@ https://github.com/dvaumoron/cornucopia`,
 	}
 
 	cmdFlags := cmd.Flags()
-	cmdFlags.StringVar(&conf.RepoPath, "repo-path", "", "Local path of the script cache repository")
-	cmdFlags.StringVar(&conf.RepoUrl, "repo-addr", "", "Address of the shared script repository")
+	cmdFlags.StringVar(&conf.RepoPath, "repo-path", defaultRepoPath, "Local path of the script cache repository")
+	cmdFlags.StringVar(&conf.RepoUrl, "repo-addr", defaultRepoUrl, "Address of the shared script repository")
 	cmdFlags.BoolVarP(&conf.ForceDownload, "force-download", "f", false, "Force download in module resolution")
 
 	return cmd

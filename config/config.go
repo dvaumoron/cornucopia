@@ -31,25 +31,19 @@ type Config struct {
 	ForceDownload bool
 }
 
-func (c *Config) InitEmptyFields(envRepoPath string, envRepoUrl string) error {
-	if c.RepoPath == "" {
-		if envRepoPath == "" {
-			userHome, err := os.UserHomeDir()
-			if err != nil {
-				return err
-			}
-			c.RepoPath = path.Join(userHome, ".cornucopia", "recipes")
-		} else {
-			c.RepoPath = envRepoPath
+func InitDefault(envRepoPathName string, envRepoUrlName string) (string, string, error) {
+	envRepoPath := os.Getenv(envRepoPathName)
+	if envRepoPath == "" {
+		userHome, err := os.UserHomeDir()
+		if err != nil {
+			return "", "", err
 		}
+		envRepoPath = path.Join(userHome, ".cornucopia", "recipes")
 	}
 
-	if c.RepoUrl == "" {
-		if envRepoUrl == "" {
-			c.RepoUrl = defaultRepoUrl
-		} else {
-			c.RepoUrl = envRepoUrl
-		}
+	envRepoUrl := os.Getenv(envRepoUrlName)
+	if envRepoUrl == "" {
+		envRepoUrl = defaultRepoUrl
 	}
-	return nil
+	return envRepoPath, envRepoUrl, nil
 }

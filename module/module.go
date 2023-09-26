@@ -92,19 +92,15 @@ func (ml ModuleLoader) read(modulename string) ([]byte, error) {
 		}
 	}
 
-	dUrl, err := url.JoinPath(ml.conf.RepoUrl, modulename)
+	moduleUrl, err := url.JoinPath(ml.conf.RepoUrl, modulename)
 	if err != nil {
 		return nil, err
 	}
 
-	if data, err = unsecureDownload(dUrl); err != nil {
+	if data, err = unsecureDownload(moduleUrl); err != nil {
 		return nil, err
 	}
-
-	if err = common.WriteFile(modulePath, data); err != nil {
-		return nil, err
-	}
-	return data, nil
+	return data, common.WriteFile(modulePath, data)
 }
 
 func unsecureDownload(dUrl string) ([]byte, error) {
@@ -123,9 +119,5 @@ func unsecureDownload(dUrl string) ([]byte, error) {
 	defer resp.Body.Close()
 
 	// supposing module will not be "too big"
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	return body, nil
+	return io.ReadAll(resp.Body)
 }
