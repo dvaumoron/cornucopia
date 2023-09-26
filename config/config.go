@@ -16,29 +16,39 @@
  *
  */
 
-package common
+package config
 
 import (
 	"os"
-	"strings"
+	"path"
 )
 
-const Prefix = "Cornucopia: "
+const defaultRepoUrl = "https://raw.githubusercontent.com/dvaumoron/cornucopiarecipes/main/"
 
-// Create the parents directories if needed and write the file
-func WriteFile(path string, data []byte) error {
-	if err := EnsureWrite(path); err != nil {
-		return err
-	}
-
-	return os.WriteFile(path, data, 0644)
+type Config struct {
+	RepoPath      string
+	RepoUrl       string
+	ForceDownload bool
 }
 
-// Create the parents directories if needed
-func EnsureWrite(path string) error {
-	if index := strings.LastIndexByte(path, '/'); index != -1 {
-		if err := os.MkdirAll(path[:index], 0755); err != nil {
-			return err
+func (c *Config) InitEmpty(envRepoPath string, envRepoUrl string) error {
+	if c.RepoPath == "" {
+		if envRepoPath == "" {
+			userHome, err := os.UserHomeDir()
+			if err != nil {
+				return err
+			}
+			c.RepoPath = path.Join(userHome, ".cornucopia", "recipes")
+		} else {
+			c.RepoPath = envRepoPath
+		}
+	}
+
+	if c.RepoUrl == "" {
+		if envRepoUrl == "" {
+			c.RepoUrl = defaultRepoUrl
+		} else {
+			c.RepoUrl = envRepoUrl
 		}
 	}
 	return nil

@@ -28,6 +28,7 @@ import (
 	"path"
 
 	"github.com/dvaumoron/cornucopia/common"
+	"github.com/dvaumoron/cornucopia/config"
 	"go.starlark.net/starlark"
 )
 
@@ -40,13 +41,12 @@ type entry struct {
 
 type ModuleLoader struct {
 	threadPrefix string
-	path         string
-	url          string
+	conf         config.Config
 	cache        map[string]*entry
 }
 
-func MakeLoader(threadPrefix string, repositoryPath string, repositoryUrl string) ModuleLoader {
-	return ModuleLoader{threadPrefix: threadPrefix, path: repositoryPath, url: repositoryUrl, cache: map[string]*entry{}}
+func MakeLoader(threadPrefix string, conf config.Config) ModuleLoader {
+	return ModuleLoader{threadPrefix: threadPrefix, conf: conf, cache: map[string]*entry{}}
 }
 
 func (ml ModuleLoader) Load(thread *starlark.Thread, modulename string) (starlark.StringDict, error) {
@@ -76,8 +76,8 @@ func (ml ModuleLoader) Load(thread *starlark.Thread, modulename string) (starlar
 }
 
 // Read data, trying the following resolution for relative path :
-//   - read from current directory as base path
-//   - read from local repository path as base path
+//   - read with current directory as base path
+//   - read with local repository path as base path (skipped with force download flag)
 //   - download from repository url and write the content in local repository path
 func (ml ModuleLoader) read(modulename string) ([]byte, error) {
 	data, err := os.ReadFile(modulename)
@@ -85,12 +85,14 @@ func (ml ModuleLoader) read(modulename string) ([]byte, error) {
 		return data, err
 	}
 
-	repoPath := path.Join(ml.path, modulename)
-	if data, err = os.ReadFile(repoPath); err == nil {
-		return data, nil
+	modulePath := path.Join(ml.conf.RepoPath, modulename)
+	if !ml.conf.ForceDownload {
+		if data, err = os.ReadFile(modulePath); err == nil {
+			return data, nil
+		}
 	}
 
-	dUrl, err := url.JoinPath(ml.url, modulename)
+	dUrl, err := url.JoinPath(ml.conf.RepoUrl, modulename)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +101,7 @@ func (ml ModuleLoader) read(modulename string) ([]byte, error) {
 		return nil, err
 	}
 
-	if err = common.WriteFile(repoPath, data); err != nil {
+	if err = common.WriteFile(modulePath, data); err != nil {
 		return nil, err
 	}
 	return data, nil
