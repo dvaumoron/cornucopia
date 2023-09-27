@@ -44,7 +44,7 @@ userType, userBuilder = CRUD(
         "Email": String(),
     },
     timeOutDuration=timeOutDuration,
-    execerContext=execerContext, rowQueryerContext=rowQueryerContext
+    execerContext=execerContext, rowQueryerContext=rowQueryerContext,
 )
 
 userFile.Line()
@@ -60,7 +60,7 @@ messageFile = newModelFile()
 messageType, messageBuilder = CRUD(
     messageFile, "Message", primaryKey="Id", fields=messageFields,
     timeOutDuration=timeOutDuration,
-    execerContext=execerContext, rowQueryerContext=Id("RowQueryerContext")
+    execerContext=execerContext, rowQueryerContext=rowQueryerContext,
 )
 
 messageFile.Line()
