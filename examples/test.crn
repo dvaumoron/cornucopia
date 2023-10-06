@@ -18,7 +18,7 @@ load("hello.crn", "Hello")
 
 Hello()
 
-load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "QueryerContext", "CRUD", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
+load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "QueryerContext", "CRUD", "GetNamedFields", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
 
 def newModelFile():
     f = NewFile("model")
@@ -52,11 +52,16 @@ timeOutDuration = Id("timeout")
 userFile = newModelFile()
 
 userType, userBuilder = CRUD(
-    userFile, "User", primaryKey="Login", fields={
-        "Login": String(),
-        "Firstname": String(),
-        "Lastname": String(),
-        "Email": String(),
+    userFile, {
+        "typeName": "User",
+        "tableName": "users",
+        "primaryKey": "Login",
+        "fields" :{
+            "Login": [String(), "login"],
+            "Firstname": [String(), "firstname"],
+            "Lastname": [String(), "lastname"],
+            "Email": [String(), "email"],    
+        },
     },
     timeOutDuration=timeOutDuration,
     execerContext=execerContext, rowQueryerContext=rowQueryerContext,
@@ -64,18 +69,24 @@ userType, userBuilder = CRUD(
 
 userFile.Line()
 
-messageFields={
-    "Id": Int64(),
-    "UserLogin": String(),
-    "Content": String(),
+messageDesc={
+    "typeName": "Message",
+    "tableName": "messages",
+    "primaryKey": "Id",
+    "fields" :{
+        "Id": [Int64(), "id"],
+        "UserLogin": [String(), "user_login"],
+        "Content": [String(), "content"],
+    },
 }
 
 messageFile = newModelFile()
 
 messageType, messageBuilder = CRUD(
-    messageFile, "Message", primaryKey="Id", fields=messageFields,
+    messageFile, messageDesc,
     timeOutDuration=timeOutDuration,
-    execerContext=execerContext, rowQueryerContext=rowQueryerContext,
+    execerContext=execerContext,
+    rowQueryerContext=rowQueryerContext,
 )
 
 messageFile.Line()
@@ -84,9 +95,9 @@ queryMessagesName = "getMessagesByUserLogin"
 
 MultiConvertedResultQueryFunc(
     messageFile, queryMessagesName,
-    query="select o.id, o.userLogin, o.content from messages as o where o.userLogin = :login;",
-    timeOutDuration=timeOutDuration, poolType=queryerContext, inputTypes={"login": String()}, queryResultType=messageFields,
-    converter=Id(messageBuilder), outputType=messageType,
+    query="select o.id, o.user_login, o.content from messages as o where o.user_login = :login;",
+    timeOutDuration=timeOutDuration, poolType=queryerContext, inputFields={"login": String()},
+    queryResultFields=GetNamedFields(messageDesc), converter=Id(messageBuilder), outputType=messageType,
 )
 
 messageFile.Line()

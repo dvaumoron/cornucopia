@@ -26,15 +26,15 @@ func (o Message) Create(pool ExecerContext, ctx context.Context) error {
 	return err
 }
 
-func ReadMessage(pool RowQueryerContext, ctx context.Context, id int64) (Message, error) {
+func ReadMessage(pool RowQueryerContext, ctx context.Context, Id int64) (Message, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	var Id int64
-	var UserLogin string
-	var Content string
-	err := pool.QueryRowContext(ctx, "select o.id, o.userlogin, o.content from messages as o where o.id = :id;", sql.Named("id", id)).Scan(&Id, &UserLogin, &Content)
-	return MakeMessage(Id, UserLogin, Content), err
+	var IdTemp int64
+	var UserLoginTemp string
+	var ContentTemp string
+	err := pool.QueryRowContext(ctx, "select o.id, o.user_login, o.content from messages as o where o.id = :Id;", sql.Named("Id", Id)).Scan(&IdTemp, &UserLoginTemp, &ContentTemp)
+	return MakeMessage(IdTemp, UserLoginTemp, ContentTemp), err
 }
 
 func (o Message) Update(pool ExecerContext, ctx context.Context) error {
@@ -51,7 +51,7 @@ func createMessage(pool ExecerContext, ctx context.Context, Id int64, UserLogin 
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	result, err := pool.ExecContext(ctx, "insert into messages(id, userlogin, content) values(:Id, :UserLogin, :Content);", sql.Named("Id", Id), sql.Named("UserLogin", UserLogin), sql.Named("Content", Content))
+	result, err := pool.ExecContext(ctx, "insert into messages(id, user_login, content) values(:Id, :UserLogin, :Content);", sql.Named("Id", Id), sql.Named("UserLogin", UserLogin), sql.Named("Content", Content))
 	if err != nil {
 		return int64(0), err
 	}
@@ -62,18 +62,18 @@ func updateMessage(pool ExecerContext, ctx context.Context, Id int64, UserLogin 
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	result, err := pool.ExecContext(ctx, "update messages set userlogin = :UserLogin, content = :Content where id = :Id;", sql.Named("Id", Id), sql.Named("UserLogin", UserLogin), sql.Named("Content", Content))
+	result, err := pool.ExecContext(ctx, "update messages set user_login = :UserLogin, content = :Content where id = :Id;", sql.Named("Id", Id), sql.Named("UserLogin", UserLogin), sql.Named("Content", Content))
 	if err != nil {
 		return int64(0), err
 	}
 	return result.RowsAffected()
 }
 
-func deleteMessage(pool ExecerContext, ctx context.Context, id int64) (int64, error) {
+func deleteMessage(pool ExecerContext, ctx context.Context, Id int64) (int64, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	result, err := pool.ExecContext(ctx, "delete from messages where id = :id;", sql.Named("id", id))
+	result, err := pool.ExecContext(ctx, "delete from messages where id = :Id;", sql.Named("Id", Id))
 	if err != nil {
 		return int64(0), err
 	}
@@ -84,10 +84,10 @@ func getMessagesByUserLogin(pool QueryerContext, ctx context.Context, login stri
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	var Id int64
-	var UserLogin string
-	var Content string
-	rows, err := pool.QueryContext(ctx, "select o.id, o.userLogin, o.content from messages as o where o.userLogin = :login;", sql.Named("login", login))
+	var IdTemp int64
+	var UserLoginTemp string
+	var ContentTemp string
+	rows, err := pool.QueryContext(ctx, "select o.id, o.user_login, o.content from messages as o where o.user_login = :login;", sql.Named("login", login))
 	if err != nil {
 		return nil, err
 	}
@@ -95,11 +95,11 @@ func getMessagesByUserLogin(pool QueryerContext, ctx context.Context, login stri
 
 	res := []Message{}
 	for rows.Next() {
-		err := rows.Scan(&Id, &UserLogin, &Content)
+		err := rows.Scan(&IdTemp, &UserLoginTemp, &ContentTemp)
 		if err != nil {
 			return nil, err
 		}
-		res = append(res, MakeMessage(Id, UserLogin, Content))
+		res = append(res, MakeMessage(IdTemp, UserLoginTemp, ContentTemp))
 	}
 	return res, nil
 }

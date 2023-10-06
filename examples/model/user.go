@@ -28,16 +28,16 @@ func (o User) Create(pool ExecerContext, ctx context.Context) error {
 	return err
 }
 
-func ReadUser(pool RowQueryerContext, ctx context.Context, login string) (User, error) {
+func ReadUser(pool RowQueryerContext, ctx context.Context, Login string) (User, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	var Login string
-	var Firstname string
-	var Lastname string
-	var Email string
-	err := pool.QueryRowContext(ctx, "select o.login, o.firstname, o.lastname, o.email from users as o where o.login = :login;", sql.Named("login", login)).Scan(&Login, &Firstname, &Lastname, &Email)
-	return MakeUser(Login, Firstname, Lastname, Email), err
+	var LoginTemp string
+	var FirstnameTemp string
+	var LastnameTemp string
+	var EmailTemp string
+	err := pool.QueryRowContext(ctx, "select o.login, o.firstname, o.lastname, o.email from users as o where o.login = :Login;", sql.Named("Login", Login)).Scan(&LoginTemp, &FirstnameTemp, &LastnameTemp, &EmailTemp)
+	return MakeUser(LoginTemp, FirstnameTemp, LastnameTemp, EmailTemp), err
 }
 
 func (o User) Update(pool ExecerContext, ctx context.Context) error {
@@ -72,11 +72,11 @@ func updateUser(pool ExecerContext, ctx context.Context, Login string, Firstname
 	return result.RowsAffected()
 }
 
-func deleteUser(pool ExecerContext, ctx context.Context, login string) (int64, error) {
+func deleteUser(pool ExecerContext, ctx context.Context, Login string) (int64, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	result, err := pool.ExecContext(ctx, "delete from users where login = :login;", sql.Named("login", login))
+	result, err := pool.ExecContext(ctx, "delete from users where login = :Login;", sql.Named("Login", Login))
 	if err != nil {
 		return int64(0), err
 	}
