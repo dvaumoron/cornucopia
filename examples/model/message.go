@@ -93,15 +93,15 @@ func getMessagesByUserLogin(pool QueryerContext, ctx context.Context, login stri
 	}
 	defer rows.Close()
 
-	res := []Message{}
+	results := []Message{}
 	for rows.Next() {
 		err := rows.Scan(&IdTemp, &UserLoginTemp, &ContentTemp)
 		if err != nil {
 			return nil, err
 		}
-		res = append(res, MakeMessage(IdTemp, UserLoginTemp, ContentTemp))
+		results = append(results, MakeMessage(IdTemp, UserLoginTemp, ContentTemp))
 	}
-	return res, nil
+	return results, nil
 }
 
 func (o Message) GetUser(pool RowQueryerContext, ctx context.Context) (User, error) {
