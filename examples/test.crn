@@ -18,7 +18,7 @@ load("hello.crn", "Hello")
 
 Hello()
 
-load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "QueryerContext", "CRUD", "BuildConvTypeDesc", "SelectQuery", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
+load("dvaumoron/sql.crn", "ConstTimeoutSec", "ExecerContext", "RowQueryerContext", "QueryerContext", "CRUD", "BuildConvTypeDesc", "SelectQuery", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
 
 def newModelFile():
     f = NewFile("model")
@@ -27,7 +27,7 @@ def newModelFile():
 
 commonFile = newModelFile()
 
-commonFile.Const().Id("timeout").Op("=").Qual("time", "Duration").Call(5).Op("*").Qual("time", "Second")
+ConstTimeoutSec(commonFile, 5)
 
 # interfaces allowing *sql.DB or *sql.Tx
 
