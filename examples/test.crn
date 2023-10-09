@@ -18,7 +18,7 @@ load("hello.crn", "Hello")
 
 Hello()
 
-load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "QueryerContext", "CRUD", "GetNamedFields", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
+load("dvaumoron/sql.crn", "ExecerContext", "RowQueryerContext", "QueryerContext", "CRUD", "BuildConvTypeDesc", "SelectQuery", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
 
 def newModelFile():
     f = NewFile("model")
@@ -52,33 +52,25 @@ timeOutDuration = Id("timeout")
 userFile = newModelFile()
 
 userType, userBuilder = CRUD(
-    userFile, {
-        "typeName": "User",
-        "tableName": "users",
-        "primaryKey": "Login",
-        "fields" :{
-            "Login": [String(), "login"],
-            "Firstname": [String(), "firstname"],
-            "Lastname": [String(), "lastname"],
-            "Email": [String(), "email"],    
-        },
-    },
+    userFile, BuildConvTypeDesc("User", {
+        "Login": String(),
+        "Firstname": String(),
+        "Lastname": String(),
+        "Email": String(),
+    }),
     timeOutDuration=timeOutDuration,
     execerContext=execerContext, rowQueryerContext=rowQueryerContext,
 )
 
 userFile.Line()
 
-messageDesc={
-    "typeName": "Message",
-    "tableName": "messages",
-    "primaryKey": "Id",
-    "fields" :{
-        "Id": [Int64(), "id"],
-        "UserLogin": [String(), "user_login"],
-        "Content": [String(), "content"],
-    },
+messageFields =  {
+    "Id": Int64(),
+    "UserLogin": String(),
+    "Content": String(),
 }
+
+messageDesc = BuildConvTypeDesc("Message", messageFields)
 
 messageFile = newModelFile()
 
@@ -95,9 +87,9 @@ queryMessagesName = "getMessagesByUserLogin"
 
 MultiConvertedResultQueryFunc(
     messageFile, queryMessagesName,
-    query="select o.id, o.user_login, o.content from messages as o where o.user_login = :login;",
+    query=SelectQuery(messageDesc, "m.user_login = :login;", alias="m"),
     timeOutDuration=timeOutDuration, poolType=queryerContext, inputFields={"login": String()},
-    queryResultFields=GetNamedFields(messageDesc), converter=Id(messageBuilder), outputType=messageType,
+    queryResultFields=messageFields, converter=Id(messageBuilder), outputType=messageType,
 )
 
 messageFile.Line()

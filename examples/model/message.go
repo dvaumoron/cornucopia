@@ -87,7 +87,7 @@ func getMessagesByUserLogin(pool QueryerContext, ctx context.Context, login stri
 	var IdTemp int64
 	var UserLoginTemp string
 	var ContentTemp string
-	rows, err := pool.QueryContext(ctx, "select o.id, o.user_login, o.content from messages as o where o.user_login = :login;", sql.Named("login", login))
+	rows, err := pool.QueryContext(ctx, "select m.id, m.user_login, m.content from messages as m where m.user_login = :login;;", sql.Named("login", login))
 	if err != nil {
 		return nil, err
 	}
