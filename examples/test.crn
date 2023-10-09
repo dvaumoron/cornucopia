@@ -43,9 +43,11 @@ QueryerContext(commonFile, "QueryerContext")
 
 commonFile.Save("model/common.go")
 
-execerContext = Id("ExecerContext")
-rowQueryerContext = Id("RowQueryerContext")
-queryerContext = Id("QueryerContext")
+dbInterfaces = {
+    "execerContext": Id("ExecerContext"),
+    "rowQueryerContext": Id("RowQueryerContext"),
+    "queryerContext": Id("QueryerContext"),
+}
 
 timeOutDuration = Id("timeout")
 
@@ -58,8 +60,7 @@ userType, userBuilder = CRUD(
         "Lastname": String(),
         "Email": String(),
     }),
-    timeOutDuration=timeOutDuration,
-    execerContext=execerContext, rowQueryerContext=rowQueryerContext,
+    timeOutDuration=timeOutDuration, dbInterfaces=dbInterfaces,
 )
 
 userFile.Line()
@@ -77,8 +78,7 @@ messageFile = newModelFile()
 messageType, messageBuilder = CRUD(
     messageFile, messageDesc,
     timeOutDuration=timeOutDuration,
-    execerContext=execerContext,
-    rowQueryerContext=rowQueryerContext,
+    dbInterfaces=dbInterfaces,
 )
 
 messageFile.Line()
@@ -88,7 +88,7 @@ queryMessagesName = "getMessagesByUserLogin"
 MultiConvertedResultQueryFunc(
     messageFile, queryMessagesName,
     query=SelectQuery(messageDesc, "m.user_login = :login;", alias="m"),
-    timeOutDuration=timeOutDuration, poolType=queryerContext, inputFields={"login": String()},
+    timeOutDuration=timeOutDuration, dbInterfaces=dbInterfaces, inputFields={"login": String()},
     queryResultFields=messageFields, converter=Id(messageBuilder), outputType=messageType,
 )
 
@@ -98,14 +98,14 @@ ForeignKeyMethod(
     userFile, userType,
     methodName="GetMessages",
     functionName=queryMessagesName, foreignKey="Login",
-    outputType=messageType, queryerContext=queryerContext,
+    outputType=messageType, dbInterfaces=dbInterfaces,
 )
 
 ForeignKeyMethod(
     messageFile, messageType,
     methodName="GetUser", multi=False,
     functionName="ReadUser", foreignKey="UserLogin",
-    outputType=userType, queryerContext=rowQueryerContext,
+    outputType=userType, dbInterfaces=dbInterfaces,
 )
 
 userFile.Save("model/user.go")
