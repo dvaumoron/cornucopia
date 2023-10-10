@@ -115,6 +115,7 @@ func convertToGoBuiltin(value starlark.Value) any {
 	case starlark.Int:
 		res, ok := casted.Int64()
 		if ok {
+			// TODO adapt int size
 			return res
 		}
 	case starlark.Float:
