@@ -67,10 +67,9 @@ type wrapper[T jen.Code] struct {
 }
 
 func (w wrapper[T]) String() string {
-	casted, ok := w.code().(renderer)
-	if ok {
+	if casted, ok := w.code().(renderer); ok {
 		var buffer strings.Builder
-		if err := casted.Render(&buffer); err == nil {
+		if casted.Render(&buffer) == nil {
 			return buffer.String()
 		}
 	}
@@ -94,11 +93,10 @@ func (w wrapper[T]) Hash() (uint32, error) {
 }
 
 func (w wrapper[T]) Attr(name string) (starlark.Value, error) {
-	m, ok := w.wType.methods[name]
-	if !ok {
-		return nil, nil
+	if m, ok := w.wType.methods[name]; ok {
+		return m.BindReceiver(w), nil
 	}
-	return m.BindReceiver(w), nil
+	return nil, nil
 }
 
 func (w wrapper[T]) AttrNames() []string {
@@ -129,10 +127,8 @@ func convertToGoBuiltin(value starlark.Value) any {
 }
 
 func convertToGoByte(value starlark.Value) byte {
-	casted, ok := value.(starlark.Int)
-	if ok {
-		res, ok2 := casted.Int64()
-		if ok2 {
+	if casted, ok := value.(starlark.Int); ok {
+		if res, ok2 := casted.Int64(); ok2 {
 			return byte(res)
 		}
 	}
@@ -142,8 +138,7 @@ func convertToGoByte(value starlark.Value) byte {
 func convertToGoRune(value starlark.Value) rune {
 	switch casted := value.(type) {
 	case starlark.Int:
-		res, ok := casted.Int64()
-		if ok {
+		if res, ok := casted.Int64(); ok {
 			return rune(res)
 		}
 	case starlark.String:
@@ -155,11 +150,10 @@ func convertToGoRune(value starlark.Value) rune {
 }
 
 func convertToCode(value starlark.Value) jen.Code {
-	casted, ok := value.(coder)
-	if !ok {
-		return jen.Lit(convertToGoBuiltin(value))
+	if casted, ok := value.(coder); ok {
+		return casted.code()
 	}
-	return casted.code()
+	return jen.Lit(convertToGoBuiltin(value))
 }
 
 func convertToCodeSlice(args starlark.Tuple) []jen.Code {
@@ -173,8 +167,7 @@ func convertToCodeSlice(args starlark.Tuple) []jen.Code {
 func convertToStringSlice(args starlark.Tuple) []string {
 	res := make([]string, 0, len(args))
 	for _, arg := range args {
-		s, ok := starlark.AsString(arg)
-		if ok {
+		if s, ok := starlark.AsString(arg); ok {
 			res = append(res, s)
 		}
 	}
@@ -195,8 +188,7 @@ func convertToMapString(items []starlark.Tuple) map[string]string {
 
 func convertToDictOrCodeSlice(args starlark.Tuple) []jen.Code {
 	if len(args) == 1 {
-		casted, ok := args[0].(*starlark.Dict)
-		if ok {
+		if casted, ok := args[0].(*starlark.Dict); ok {
 			dict := jen.Dict{}
 			for _, item := range casted.Items() {
 				dict[convertToCode(item[0])] = convertToCode(item[1])
