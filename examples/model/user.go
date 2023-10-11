@@ -2,10 +2,7 @@
 
 package model
 
-import (
-	"context"
-	"database/sql"
-)
+import "context"
 
 type User struct {
 	Login     string
@@ -32,11 +29,12 @@ func ReadUser(pool RowQueryerContext, ctx context.Context, Login string) (User, 
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
+	query := "select o.login, o.firstname, o.lastname, o.email from users as o where o.login = $1;"
 	var LoginTemp string
 	var FirstnameTemp string
 	var LastnameTemp string
 	var EmailTemp string
-	err := pool.QueryRowContext(ctx, "select o.login, o.firstname, o.lastname, o.email from users as o where o.login = :Login;", sql.Named("Login", Login)).Scan(&LoginTemp, &FirstnameTemp, &LastnameTemp, &EmailTemp)
+	err := pool.QueryRowContext(ctx, query, Login).Scan(&LoginTemp, &FirstnameTemp, &LastnameTemp, &EmailTemp)
 	return MakeUser(LoginTemp, FirstnameTemp, LastnameTemp, EmailTemp), err
 }
 
@@ -54,7 +52,8 @@ func createUser(pool ExecerContext, ctx context.Context, Login string, Firstname
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	result, err := pool.ExecContext(ctx, "insert into users(login, firstname, lastname, email) values(:Login, :Firstname, :Lastname, :Email);", sql.Named("Login", Login), sql.Named("Firstname", Firstname), sql.Named("Lastname", Lastname), sql.Named("Email", Email))
+	query := "insert into users(login, firstname, lastname, email) values($1, $2, $3, $4);"
+	result, err := pool.ExecContext(ctx, query, Login, Firstname, Lastname, Email)
 	if err != nil {
 		return int64(0), err
 	}
@@ -65,7 +64,8 @@ func updateUser(pool ExecerContext, ctx context.Context, Login string, Firstname
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	result, err := pool.ExecContext(ctx, "update users set firstname = :Firstname, lastname = :Lastname, email = :Email where login = :Login;", sql.Named("Login", Login), sql.Named("Firstname", Firstname), sql.Named("Lastname", Lastname), sql.Named("Email", Email))
+	query := "update users set firstname = $2, lastname = $3, email = $4 where login = $1;"
+	result, err := pool.ExecContext(ctx, query, Login, Firstname, Lastname, Email)
 	if err != nil {
 		return int64(0), err
 	}
@@ -76,7 +76,8 @@ func deleteUser(pool ExecerContext, ctx context.Context, Login string) (int64, e
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	result, err := pool.ExecContext(ctx, "delete from users where login = :Login;", sql.Named("Login", Login))
+	query := "delete from users where login = $1;"
+	result, err := pool.ExecContext(ctx, query, Login)
 	if err != nil {
 		return int64(0), err
 	}

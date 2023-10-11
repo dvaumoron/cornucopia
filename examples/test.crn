@@ -18,7 +18,7 @@ load("hello.crn", "Hello")
 
 Hello()
 
-load("dvaumoron/sql.crn", "ConstDurationSec", "DeclareDBInterfaces", "CRUD", "BuildConvTypeDesc", "SelectQuery", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
+load("dvaumoron/sql.crn", "ConstDurationSec", "DeclareDBInterfaces", "CRUD", "BuildConvTypeDesc", "AUTO_KEY", "SelectQuery", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
 
 def newModelFile():
     f = NewFile("model")
@@ -36,13 +36,17 @@ commonFile.Save("model/common.go")
 
 userFile = newModelFile()
 
+userDesc = BuildConvTypeDesc("User", {
+    "Login": String(),
+    "Firstname": String(),
+    "Lastname": String(),
+    "Email": String(),
+})
+
+userDesc[AUTO_KEY] = False
+
 userType, userBuilder = CRUD(
-    userFile, BuildConvTypeDesc("User", {
-        "Login": String(),
-        "Firstname": String(),
-        "Lastname": String(),
-        "Email": String(),
-    }),
+    userFile, userDesc,
     timeOutDuration=timeOutDuration, dbInterfaces=dbInterfaces,
 )
 
