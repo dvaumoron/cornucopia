@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const timeout = time.Duration(int64(5)) * time.Second
+const timeout = time.Duration(5) * time.Second
 
 type ExecerContext interface {
 	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)

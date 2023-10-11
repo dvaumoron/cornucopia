@@ -52,7 +52,7 @@ func createMessage(pool ExecerContext, ctx context.Context, UserLogin string, Co
 	query := "insert into messages(user_login, content) values($1, $2);"
 	result, err := pool.ExecContext(ctx, query, UserLogin, Content)
 	if err != nil {
-		return int64(0), err
+		return 0, err
 	}
 	return result.RowsAffected()
 }
@@ -64,7 +64,7 @@ func updateMessage(pool ExecerContext, ctx context.Context, Id int64, UserLogin 
 	query := "update messages set user_login = $2, content = $3 where id = $1;"
 	result, err := pool.ExecContext(ctx, query, Id, UserLogin, Content)
 	if err != nil {
-		return int64(0), err
+		return 0, err
 	}
 	return result.RowsAffected()
 }
@@ -76,7 +76,7 @@ func deleteMessage(pool ExecerContext, ctx context.Context, Id int64) (int64, er
 	query := "delete from messages where id = $1;"
 	result, err := pool.ExecContext(ctx, query, Id)
 	if err != nil {
-		return int64(0), err
+		return 0, err
 	}
 	return result.RowsAffected()
 }

@@ -20,6 +20,7 @@ package glu
 
 import (
 	"io"
+	"math"
 	"sort"
 	"strings"
 
@@ -115,7 +116,9 @@ func convertToGoBuiltin(value starlark.Value) any {
 	case starlark.Int:
 		res, ok := casted.Int64()
 		if ok {
-			// TODO adapt int size
+			if math.MinInt <= res && res <= math.MaxInt {
+				return int(res)
+			}
 			return res
 		}
 	case starlark.Float:

@@ -55,7 +55,7 @@ func createUser(pool ExecerContext, ctx context.Context, Login string, Firstname
 	query := "insert into users(login, firstname, lastname, email) values($1, $2, $3, $4);"
 	result, err := pool.ExecContext(ctx, query, Login, Firstname, Lastname, Email)
 	if err != nil {
-		return int64(0), err
+		return 0, err
 	}
 	return result.RowsAffected()
 }
@@ -67,7 +67,7 @@ func updateUser(pool ExecerContext, ctx context.Context, Login string, Firstname
 	query := "update users set firstname = $2, lastname = $3, email = $4 where login = $1;"
 	result, err := pool.ExecContext(ctx, query, Login, Firstname, Lastname, Email)
 	if err != nil {
-		return int64(0), err
+		return 0, err
 	}
 	return result.RowsAffected()
 }
@@ -79,7 +79,7 @@ func deleteUser(pool ExecerContext, ctx context.Context, Login string) (int64, e
 	query := "delete from users where login = $1;"
 	result, err := pool.ExecContext(ctx, query, Login)
 	if err != nil {
-		return int64(0), err
+		return 0, err
 	}
 	return result.RowsAffected()
 }
