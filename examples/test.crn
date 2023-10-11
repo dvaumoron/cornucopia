@@ -76,7 +76,7 @@ MultiConvertedResultQueryFunc(
     messageFile, queryMessagesName,
     query=SelectQuery(messageDesc, "m.user_login = :login;", alias="m"),
     timeOutDuration=timeOutDuration, dbInterfaces=dbInterfaces, inputFields={"login": String()},
-    queryResultFields=messageFields, converter=Id(messageBuilder), outputType=messageType,
+    queryResultFields=messageFields, converter=messageBuilder, outputType=messageType,
 )
 
 messageFile.Line()
