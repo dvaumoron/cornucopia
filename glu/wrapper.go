@@ -114,8 +114,7 @@ func convertToGoBuiltin(value starlark.Value) any {
 	case starlark.Bool:
 		return bool(casted)
 	case starlark.Int:
-		res, ok := casted.Int64()
-		if ok {
+		if res, ok := casted.Int64(); ok {
 			if math.MinInt <= res && res <= math.MaxInt {
 				return int(res)
 			}
