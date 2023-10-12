@@ -21,6 +21,7 @@ package module
 import (
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -85,10 +86,19 @@ func (ml ModuleLoader) read(modulename string) ([]byte, error) {
 		return data, err
 	}
 
+	verbose := ml.conf.Verbose
+	if verbose {
+		fmt.Println("Failed to resolve", modulename, "from current directory :", err)
+	}
+
 	modulePath := path.Join(ml.conf.RepoPath, modulename)
 	if !ml.conf.ForceDownload {
 		if data, err = os.ReadFile(modulePath); err == nil {
 			return data, nil
+		}
+
+		if verbose {
+			fmt.Println("Failed to resolve", modulename, "from", modulePath, ":", err)
 		}
 	}
 

@@ -29,6 +29,7 @@ type Config struct {
 	RepoPath      string
 	RepoUrl       string
 	ForceDownload bool
+	Verbose       bool
 }
 
 func InitDefault(envRepoPathName string, envRepoUrlName string) (string, string, error) {

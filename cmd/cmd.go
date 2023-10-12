@@ -39,7 +39,8 @@ func Init() *cobra.Command {
 		Short: "cornucopia run a code generation script.",
 		Long: `cornucopia run a code generation script, find more details at :
 https://github.com/dvaumoron/cornucopia`,
-		Args: cobra.ExactArgs(1),
+		Version: "v1.1.0",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(_ *cobra.Command, args []string) error {
 			if err != nil {
 				return err
@@ -49,6 +50,14 @@ https://github.com/dvaumoron/cornucopia`,
 			loader := module.MakeLoader(common.Prefix, &conf)
 			thread := &starlark.Thread{Name: common.Prefix + scriptname, Load: loader.Load}
 			glu.InitCornucopiaGlobals()
+
+			if conf.Verbose {
+				fmt.Println("Use the repository", conf.RepoPath, "as local cache")
+				fmt.Println("Use the url", conf.RepoUrl, "as base to download script")
+				if conf.ForceDownload {
+					fmt.Println("Skip local cache in script resolution (still write in it)")
+				}
+			}
 
 			_, err = starlark.ExecFile(thread, scriptname, nil, nil)
 			generated := len(glu.GeneratedFilenames) != 0
@@ -72,6 +81,7 @@ https://github.com/dvaumoron/cornucopia`,
 	cmdFlags.StringVar(&conf.RepoPath, "repo-path", defaultRepoPath, "Local path of the script cache repository")
 	cmdFlags.StringVar(&conf.RepoUrl, "repo-addr", defaultRepoUrl, "Address of the shared script repository")
 	cmdFlags.BoolVarP(&conf.ForceDownload, "force-download", "f", false, "Force download in module resolution")
+	cmdFlags.BoolVarP(&conf.Verbose, "verbose", "v", false, "Verbose output")
 
 	return cmd
 }
