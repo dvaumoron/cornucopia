@@ -50,17 +50,19 @@ https://github.com/dvaumoron/cornucopia`,
 			thread := &starlark.Thread{Name: common.Prefix + scriptname, Load: loader.Load}
 			glu.InitCornucopiaGlobals()
 
-			if _, err = starlark.ExecFile(thread, scriptname, nil, nil); err != nil {
-				if len(glu.GeneratedFilenames) != 0 {
+			_, err = starlark.ExecFile(thread, scriptname, nil, nil)
+			generated := len(glu.GeneratedFilenames) != 0
+			if err != nil {
+				if generated {
 					displayGeneratedFileNames("Before error, the following file have been generated :")
 				}
 				return err
 			}
 
-			if len(glu.GeneratedFilenames) == 0 {
-				fmt.Println("Successful without file generation")
-			} else {
+			if generated {
 				displayGeneratedFileNames("Successful, the following file have been generated :")
+			} else {
+				fmt.Println("Successful without file generation")
 			}
 			return nil
 		},
