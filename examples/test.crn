@@ -18,7 +18,7 @@ load("hello.crn", "Hello")
 
 Hello()
 
-load("dvaumoron/sql.crn", "ConstDurationSec", "DeclareDBInterfaces", "CRUD", "BuildConvTypeDesc", "AUTO_KEY", "SelectQuery", "MultiConvertedResultQueryFunc", "ForeignKeyMethod")
+load("dvaumoron/sql.crn", "ConstDurationSec", "DeclareDBInterfaces", "CRUD", "BuildConvTypeDesc", "AUTO_KEY", "SelectQueryFunc", "ForeignKeyMethod")
 
 def newModelFile():
     f = NewFile("model")
@@ -72,11 +72,10 @@ messageFile.Line()
 
 queryMessagesName = "getMessagesByUserLogin"
 
-MultiConvertedResultQueryFunc(
+SelectQueryFunc(
     messageFile, queryMessagesName,
-    query=SelectQuery(messageDesc, "m.user_login = :login;", alias="m"),
+    typeDesc=messageDesc, where="m.user_login = :login", selectAlias="m",
     timeOutDuration=timeOutDuration, dbInterfaces=dbInterfaces, inputFields={"login": String()},
-    queryResultFields=messageFields, converter=messageBuilder, outputType=messageType,
 )
 
 messageFile.Line()

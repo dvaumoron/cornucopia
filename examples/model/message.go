@@ -85,10 +85,10 @@ func getMessagesByUserLogin(pool QueryerContext, ctx context.Context, login stri
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	query := "select m.id, m.user_login, m.content from messages as m where m.user_login = :login;;"
-	var IdTemp int64
-	var UserLoginTemp string
-	var ContentTemp string
+	query := "select m.id, m.user_login, m.content from messages as m where m.user_login = :login;"
+	var idTemp int64
+	var userLoginTemp string
+	var contentTemp string
 	rows, err := pool.QueryContext(ctx, query, login)
 	if err != nil {
 		return nil, err
@@ -97,11 +97,11 @@ func getMessagesByUserLogin(pool QueryerContext, ctx context.Context, login stri
 
 	results := []Message{}
 	for rows.Next() {
-		err := rows.Scan(&IdTemp, &UserLoginTemp, &ContentTemp)
+		err := rows.Scan(&idTemp, &userLoginTemp, &contentTemp)
 		if err != nil {
 			return nil, err
 		}
-		results = append(results, MakeMessage(IdTemp, UserLoginTemp, ContentTemp))
+		results = append(results, MakeMessage(idTemp, userLoginTemp, contentTemp))
 	}
 	return results, nil
 }
