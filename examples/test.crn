@@ -52,13 +52,11 @@ userType, userBuilder = CRUD(
 
 userFile.Line()
 
-messageFields =  {
+messageDesc = BuildConvTypeDesc("Message", {
     "Id": Int64(),
     "UserLogin": String(),
     "Content": String(),
-}
-
-messageDesc = BuildConvTypeDesc("Message", messageFields)
+})
 
 messageFile = newModelFile()
 
