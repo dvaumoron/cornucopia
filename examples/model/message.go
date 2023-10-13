@@ -10,11 +10,11 @@ type Message struct {
 	Content   string
 }
 
-func MakeMessage(id int64, userlogin string, content string) Message {
+func MakeMessage(id int64, userLogin string, content string) Message {
 	return Message{
 		Content:   content,
 		Id:        id,
-		UserLogin: userlogin,
+		UserLogin: userLogin,
 	}
 }
 
@@ -23,16 +23,16 @@ func (o Message) Create(pool ExecerContext, ctx context.Context) error {
 	return err
 }
 
-func ReadMessage(pool RowQueryerContext, ctx context.Context, Id int64) (Message, error) {
+func ReadMessage(pool RowQueryerContext, ctx context.Context, id int64) (Message, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	query := "select o.id, o.user_login, o.content from messages as o where o.id = $1;"
-	var IdTemp int64
-	var UserLoginTemp string
-	var ContentTemp string
-	err := pool.QueryRowContext(ctx, query, Id).Scan(&IdTemp, &UserLoginTemp, &ContentTemp)
-	return MakeMessage(IdTemp, UserLoginTemp, ContentTemp), err
+	var idTemp int64
+	var userLoginTemp string
+	var contentTemp string
+	err := pool.QueryRowContext(ctx, query, id).Scan(&idTemp, &userLoginTemp, &contentTemp)
+	return MakeMessage(idTemp, userLoginTemp, contentTemp), err
 }
 
 func (o Message) Update(pool ExecerContext, ctx context.Context) error {
@@ -45,36 +45,36 @@ func (o Message) Delete(pool ExecerContext, ctx context.Context) error {
 	return err
 }
 
-func createMessage(pool ExecerContext, ctx context.Context, UserLogin string, Content string) (int64, error) {
+func createMessage(pool ExecerContext, ctx context.Context, userLogin string, content string) (int64, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	query := "insert into messages(user_login, content) values($1, $2);"
-	result, err := pool.ExecContext(ctx, query, UserLogin, Content)
+	result, err := pool.ExecContext(ctx, query, userLogin, content)
 	if err != nil {
 		return 0, err
 	}
 	return result.RowsAffected()
 }
 
-func updateMessage(pool ExecerContext, ctx context.Context, Id int64, UserLogin string, Content string) (int64, error) {
+func updateMessage(pool ExecerContext, ctx context.Context, id int64, userLogin string, content string) (int64, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	query := "update messages set user_login = $2, content = $3 where id = $1;"
-	result, err := pool.ExecContext(ctx, query, Id, UserLogin, Content)
+	result, err := pool.ExecContext(ctx, query, id, userLogin, content)
 	if err != nil {
 		return 0, err
 	}
 	return result.RowsAffected()
 }
 
-func deleteMessage(pool ExecerContext, ctx context.Context, Id int64) (int64, error) {
+func deleteMessage(pool ExecerContext, ctx context.Context, id int64) (int64, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	query := "delete from messages where id = $1;"
-	result, err := pool.ExecContext(ctx, query, Id)
+	result, err := pool.ExecContext(ctx, query, id)
 	if err != nil {
 		return 0, err
 	}
