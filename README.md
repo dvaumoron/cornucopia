@@ -2,7 +2,7 @@
 
 <img src="https://github.com/dvaumoron/cornucopia/raw/main/logo/cornucopialogo.png" width="100">
 
-Cornucopia is a go code generation tool with [shared scripts](https://github.com/dvaumoron/cornucopiarecipes) (gluing together [starlark-go](https://pkg.go.dev/go.starlark.net/starlark) and [jennifer](https://pkg.go.dev/github.com/dave/jennifer))
+Cornucopia is a Go code generation tool with [shared scripts](https://github.com/dvaumoron/cornucopiarecipes) (gluing together [starlark-go](https://pkg.go.dev/go.starlark.net/starlark) and [jennifer](https://pkg.go.dev/github.com/dave/jennifer))
 
 ## Why ?
 
@@ -55,6 +55,7 @@ Other examples could be seen [here](examples) or [there](glu/self.crn) (used to 
 On top of the [Starlark specification](https://github.com/google/starlark-go/blob/master/doc/spec.md), Cornucopia add a load implementation and allows to call some part of the [jennifer API](https://pkg.go.dev/github.com/dave/jennifer/jen).
 
 The Cornucopia load implementation try the following resolution to find a an external script :
+
 - read from current directory
 - read from local repository path (environment variable `CORNUCOPIA_REPO_PATH`, default is `$HOME/.cornucopia/recipes`)
 - download from repository url (environment variable `CORNUCOPIA_REPO_URL`, default link to [Cornucopia Recipes](https://github.com/dvaumoron/cornucopiarecipes)) and write the content in local repository path
