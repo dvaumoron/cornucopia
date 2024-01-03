@@ -29,8 +29,10 @@ import (
 )
 
 // check interface compliance
-var _ starlark.HasAttrs = wrapper[jen.Code]{}
-var _ coder = wrapper[jen.Code]{}
+var (
+	_ starlark.HasAttrs = wrapper[jen.Code]{}
+	_ coder             = wrapper[jen.Code]{}
+)
 
 type coder interface {
 	code() jen.Code

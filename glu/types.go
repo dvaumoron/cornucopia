@@ -31,8 +31,10 @@ import (
 
 var errForbidAbsolute = errors.New("writing on an absolute path is forbidden")
 
-var jenFileWrappedType wrappedType
-var jenStatementWrappedType wrappedType
+var (
+	jenFileWrappedType      wrappedType
+	jenStatementWrappedType wrappedType
+)
 
 // mutex not needed
 var GeneratedFilenames []string
