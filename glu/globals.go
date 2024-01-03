@@ -23,6 +23,8 @@ import (
 	"go.starlark.net/starlark"
 )
 
+// TODO add basic text, JSON, YAML
+
 func wrappedNewFile(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var packageName string
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "packageName", &packageName); err != nil {
