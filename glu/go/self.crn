@@ -50,11 +50,12 @@ oneargStatementMethods = ["Assert"]
 
 # generation part
 
+GLU = "github.com/dvaumoron/cornucopia/glu"
 JEN = "github.com/dave/jennifer/jen"
 STARLARK = "go.starlark.net/starlark"
 
 def newFileWithComment():
-    f = NewFile("glu")
+    f = NewFile("go_glu")
     f.HeaderComment("This file is generated - do not edit.")
     return f
 
@@ -73,9 +74,9 @@ def newStarlarkBuiltinFunc(f, name, param, param2, param3, param4):
     ).Parens(List(Qual(STARLARK, "Value"), Error()))
 
 def returnWrappedStatement(value):
-    return Return(Id("wrapper").Types(Op("*").Qual(JEN, "Statement")).Values({
-            Id("inner"): value,
-            Id("wType"): Op("&").Id("jenStatementWrappedType"),
+    return Return(Qual(GLU, "Wrapper").Types(Op("*").Qual(JEN, "Statement")).Values({
+            Id("Inner"): value,
+            Id("WType"): Op("&").Id("jenStatementWrappedType"),
     }), Nil())
 
 def basicFunction(f, functionName):
@@ -110,7 +111,7 @@ def oneargFunction(f, functionName):
 
 
 def assertReceiver(typeName, methodName):
-    return Id("b").Dot("Receiver").Call().Assert(Id("wrapper").Types(Op("*").Qual(JEN, typeName))).Dot("inner").Dot(methodName)
+    return Id("b").Dot("Receiver").Call().Assert(Qual(GLU, "Wrapper").Types(Op("*").Qual(JEN, typeName))).Dot("Inner").Dot(methodName)
 
 def basicMethod(f, typeName, methodName):
     newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "_", "_").Block(
@@ -132,7 +133,7 @@ def oneargMethod(f, typeName, methodName):
     f.Line()
 
 def registerType(name, methodNames):
-    return Id(name+"WrappedType").Op("=").Id("makeWrappedType").Call(name, *[wrapFunc(methodName, name + "_" + methodName) for methodName in methodNames])
+    return Id(name+"WrappedType").Op("=").Qual(GLU, "MakeWrappedType").Call(name, *[wrapFunc(methodName, name + "_" + methodName) for methodName in methodNames])
 
 def makeLinking():
     linking = newFileWithComment()
@@ -144,7 +145,7 @@ def makeLinking():
 
     linking.Line()
 
-    linking.Func().Id("InitCornucopiaGlobals").Params().Block(*[declareGlobal(name) for name in sorted(globalNames + commonNames)])
+    linking.Func().Id("InitCornucopiaGoGlobals").Params().Block(*[declareGlobal(name) for name in sorted(globalNames + commonNames)])
 
     linking.Save("linking.go")
 

@@ -24,12 +24,19 @@ import (
 	"github.com/dvaumoron/cornucopia/common"
 	"github.com/dvaumoron/cornucopia/config"
 	"github.com/dvaumoron/cornucopia/glu"
+	go_glu "github.com/dvaumoron/cornucopia/glu/go"
+	text_glu "github.com/dvaumoron/cornucopia/glu/text"
 	"github.com/dvaumoron/cornucopia/module"
 	"github.com/spf13/cobra"
 	"go.starlark.net/starlark"
 )
 
 var conf config.Config
+
+func initCornucopiaGlobals() {
+	go_glu.InitCornucopiaGoGlobals()
+	text_glu.InitCornucopiaTextGlobals()
+}
 
 func Init() *cobra.Command {
 	defaultRepoPath, defaultRepoUrl, err := config.InitDefault("CORNUCOPIA_REPO_PATH", "CORNUCOPIA_REPO_URL")
@@ -49,7 +56,7 @@ https://github.com/dvaumoron/cornucopia`,
 			scriptname := args[0]
 			loader := module.MakeLoader(common.Prefix, &conf)
 			thread := &starlark.Thread{Name: common.Prefix + scriptname, Load: loader.Load}
-			glu.InitCornucopiaGlobals()
+			initCornucopiaGlobals()
 
 			if conf.Verbose {
 				fmt.Println("Use the repository", conf.RepoPath, "as local cache")

@@ -16,14 +16,15 @@
  *
  */
 
-package glu
+package go_glu
 
 import (
 	"github.com/dave/jennifer/jen"
+	"github.com/dvaumoron/cornucopia/glu"
 	"go.starlark.net/starlark"
 )
 
-// TODO add basic text, JSON, YAML
+//go:generate cornucopia self.crn
 
 func wrappedNewFile(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var packageName string
@@ -32,7 +33,7 @@ func wrappedNewFile(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple
 	}
 
 	file := jen.NewFile(packageName)
-	return wrapper[*jen.File]{inner: file, wType: &jenFileWrappedType}, nil
+	return glu.Wrapper[*jen.File]{Inner: file, WType: &jenFileWrappedType}, nil
 }
 
 func wrappedComment(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -51,7 +52,7 @@ func wrappedComplex(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple
 		return nil, err
 	}
 	stmt := jen.Complex(convertToCode(m), convertToCode(key))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
 }
 
 func wrappedCopy(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -61,7 +62,7 @@ func wrappedCopy(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, k
 		return nil, err
 	}
 	stmt := jen.Copy(convertToCode(dst), convertToCode(src))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
 }
 
 func wrappedDelete(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -71,7 +72,7 @@ func wrappedDelete(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple,
 		return nil, err
 	}
 	stmt := jen.Delete(convertToCode(m), convertToCode(key))
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
 }
 
 func wrappedId(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -80,7 +81,7 @@ func wrappedId(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwa
 		return nil, err
 	}
 	id := jen.Id(name)
-	return wrapper[*jen.Statement]{inner: id, wType: &jenStatementWrappedType}, nil
+	return glu.Wrapper[*jen.Statement]{Inner: id, WType: &jenStatementWrappedType}, nil
 }
 
 func wrappedLit(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -89,7 +90,7 @@ func wrappedLit(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kw
 		return nil, err
 	}
 	lit := jen.Lit(convertToGoBuiltin(value))
-	return wrapper[*jen.Statement]{inner: lit, wType: &jenStatementWrappedType}, nil
+	return glu.Wrapper[*jen.Statement]{Inner: lit, WType: &jenStatementWrappedType}, nil
 }
 
 func wrappedLitByte(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -98,7 +99,7 @@ func wrappedLitByte(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple
 		return nil, err
 	}
 	lit := jen.LitByte(convertToGoByte(value))
-	return wrapper[*jen.Statement]{inner: lit, wType: &jenStatementWrappedType}, nil
+	return glu.Wrapper[*jen.Statement]{Inner: lit, WType: &jenStatementWrappedType}, nil
 }
 
 func wrappedLitRune(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -107,7 +108,7 @@ func wrappedLitRune(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple
 		return nil, err
 	}
 	lit := jen.LitRune(convertToGoRune(value))
-	return wrapper[*jen.Statement]{inner: lit, wType: &jenStatementWrappedType}, nil
+	return glu.Wrapper[*jen.Statement]{Inner: lit, WType: &jenStatementWrappedType}, nil
 }
 
 func wrappedOp(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -116,7 +117,7 @@ func wrappedOp(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwa
 		return nil, err
 	}
 	op := jen.Op(value)
-	return wrapper[*jen.Statement]{inner: op, wType: &jenStatementWrappedType}, nil
+	return glu.Wrapper[*jen.Statement]{Inner: op, WType: &jenStatementWrappedType}, nil
 }
 
 func wrappedQual(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -126,10 +127,10 @@ func wrappedQual(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, k
 		return nil, err
 	}
 	qual := jen.Qual(path, name)
-	return wrapper[*jen.Statement]{inner: qual, wType: &jenStatementWrappedType}, nil
+	return glu.Wrapper[*jen.Statement]{Inner: qual, WType: &jenStatementWrappedType}, nil
 }
 
 func wrappedValues(_ *starlark.Thread, _ *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	stmt := jen.Values(convertToDictOrCodeSlice(args)...)
-	return wrapper[*jen.Statement]{inner: stmt, wType: &jenStatementWrappedType}, nil
+	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
 }
