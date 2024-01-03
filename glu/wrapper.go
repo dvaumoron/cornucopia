@@ -24,11 +24,16 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/dave/jennifer/jen"
 	"go.starlark.net/starlark"
 )
 
 type renderer interface {
 	Render(writer io.Writer) error
+}
+
+type Coder interface {
+	Code() jen.Code
 }
 
 type WrappedType struct {
@@ -95,4 +100,9 @@ func (w Wrapper[T]) Attr(name string) (starlark.Value, error) {
 
 func (w Wrapper[T]) AttrNames() []string {
 	return w.WType.methodNames
+}
+
+func (w Wrapper[T]) Code() jen.Code {
+	casted, _ := any(w.Inner).(jen.Code)
+	return casted
 }

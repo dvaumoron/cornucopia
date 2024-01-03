@@ -22,12 +22,9 @@ import (
 	"math"
 
 	"github.com/dave/jennifer/jen"
+	"github.com/dvaumoron/cornucopia/glu"
 	"go.starlark.net/starlark"
 )
-
-type coder interface {
-	code() jen.Code
-}
 
 func convertToGoBuiltin(value starlark.Value) any {
 	switch casted := value.(type) {
@@ -72,8 +69,8 @@ func convertToGoRune(value starlark.Value) rune {
 }
 
 func convertToCode(value starlark.Value) jen.Code {
-	if casted, ok := value.(coder); ok {
-		return casted.code()
+	if casted, ok := value.(glu.Coder); ok {
+		return casted.Code()
 	}
 	return jen.Lit(convertToGoBuiltin(value))
 }
