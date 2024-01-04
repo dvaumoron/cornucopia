@@ -153,17 +153,17 @@ func jenFile_Line(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ [
 }
 
 func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var filename string
-	err := starlark.UnpackArgs(b.Name(), args, kwargs, "filename", &filename)
+	var fileName string
+	err := starlark.UnpackArgs(b.Name(), args, kwargs, "fileName", &fileName)
 	if err != nil {
 		return nil, err
 	}
 
-	if path.IsAbs(filename) {
+	if path.IsAbs(fileName) {
 		return nil, glu.ErrForbidAbsolute
 	}
 
-	if err = common.EnsureWrite(filename); err != nil {
+	if err = common.EnsureWrite(fileName); err != nil {
 		return nil, err
 	}
 
@@ -173,11 +173,11 @@ func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 		return nil, glu.ErrCast
 	}
 
-	if err = file.Save(filename); err != nil {
+	if err = file.Save(fileName); err != nil {
 		return nil, err
 	}
 
-	glu.GeneratedFilenames = append(glu.GeneratedFilenames, filename)
+	glu.GeneratedFileNames = append(glu.GeneratedFileNames, fileName)
 	return starlark.None, nil
 }
 
@@ -258,7 +258,7 @@ func jenStatement_Lit(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tup
 		return nil, glu.ErrCast
 	}
 
-	lit := stmt.Lit(convertToGoBuiltin(value))
+	lit := stmt.Lit(glu.ConvertToGoBaseType(value))
 	return glu.Wrapper{Inner: lit, WType: &jenStatementWrappedType}, nil
 }
 

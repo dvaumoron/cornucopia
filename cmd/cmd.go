@@ -25,6 +25,7 @@ import (
 	"github.com/dvaumoron/cornucopia/config"
 	"github.com/dvaumoron/cornucopia/glu"
 	go_glu "github.com/dvaumoron/cornucopia/glu/go"
+	marshal_glu "github.com/dvaumoron/cornucopia/glu/marshal"
 	text_glu "github.com/dvaumoron/cornucopia/glu/text"
 	"github.com/dvaumoron/cornucopia/module"
 	"github.com/spf13/cobra"
@@ -36,9 +37,10 @@ var conf config.Config
 func initCornucopiaGlobals() {
 	go_glu.InitCornucopiaGoGlobals()
 	text_glu.InitCornucopiaTextGlobals()
+	marshal_glu.InitCornucopiaMarshalGlobals()
 }
 
-func Init() *cobra.Command {
+func Init(version string) *cobra.Command {
 	defaultRepoPath, defaultRepoUrl, err := config.InitDefault("CORNUCOPIA_REPO_PATH", "CORNUCOPIA_REPO_URL")
 
 	cmd := &cobra.Command{
@@ -46,7 +48,7 @@ func Init() *cobra.Command {
 		Short: "cornucopia run a code generation script.",
 		Long: `cornucopia run a code generation script, find more details at :
 https://github.com/dvaumoron/cornucopia`,
-		Version: "v1.1.0",
+		Version: version,
 		Args:    cobra.ExactArgs(1),
 		RunE: func(_ *cobra.Command, args []string) error {
 			if err != nil {
@@ -67,7 +69,7 @@ https://github.com/dvaumoron/cornucopia`,
 			}
 
 			_, err = starlark.ExecFile(thread, scriptname, nil, nil)
-			generated := len(glu.GeneratedFilenames) != 0
+			generated := len(glu.GeneratedFileNames) != 0
 			if err != nil {
 				if generated {
 					displayGeneratedFileNames("Before error, the following file have been generated :")
@@ -95,7 +97,7 @@ https://github.com/dvaumoron/cornucopia`,
 
 func displayGeneratedFileNames(msg string) {
 	fmt.Println(msg)
-	for _, fileName := range glu.GeneratedFilenames {
+	for _, fileName := range glu.GeneratedFileNames {
 		fmt.Println(fileName)
 	}
 }

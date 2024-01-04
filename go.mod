@@ -6,6 +6,7 @@ require (
 	github.com/dave/jennifer v1.6.1
 	github.com/spf13/cobra v1.7.0
 	go.starlark.net v0.0.0-20230612165344-9532f5667272
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (

@@ -30,11 +30,6 @@ func InitCornucopiaTextGlobals() {
 }
 
 func wrappedNewTextFile(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var packageName string
-	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "packageName", &packageName); err != nil {
-		return nil, err
-	}
-
 	builder := new(strings.Builder)
 	return glu.Wrapper{Inner: builder, WType: &textFileWrappedType}, nil
 }

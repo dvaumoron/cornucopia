@@ -27,7 +27,7 @@ import (
 	"go.starlark.net/starlark"
 )
 
-var textFileWrappedType = glu.MakeWrappedType("testFile", starlark.NewBuiltin("Line", textFile_Line), starlark.NewBuiltin("Save", textFile_Save))
+var textFileWrappedType = glu.MakeWrappedType("textFile", starlark.NewBuiltin("Line", textFile_Line), starlark.NewBuiltin("Save", textFile_Save))
 
 func textFile_Line(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
 	recv, _ := b.Receiver().(glu.Wrapper)
@@ -44,13 +44,13 @@ func textFile_Line(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple,
 }
 
 func textFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	var filename string
-	err := starlark.UnpackArgs(b.Name(), args, kwargs, "filename", &filename)
+	var fileName string
+	err := starlark.UnpackArgs(b.Name(), args, kwargs, "fileName", &fileName)
 	if err != nil {
 		return nil, err
 	}
 
-	if path.IsAbs(filename) {
+	if path.IsAbs(fileName) {
 		return nil, glu.ErrForbidAbsolute
 	}
 
@@ -60,10 +60,10 @@ func textFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple,
 		return nil, glu.ErrCast
 	}
 
-	if err = common.WriteFile(filename, []byte(casted.String())); err != nil {
+	if err = common.WriteFile(fileName, []byte(casted.String())); err != nil {
 		return nil, err
 	}
 
-	glu.GeneratedFilenames = append(glu.GeneratedFilenames, filename)
+	glu.GeneratedFileNames = append(glu.GeneratedFileNames, fileName)
 	return starlark.None, nil
 }

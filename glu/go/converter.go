@@ -19,31 +19,10 @@
 package go_glu
 
 import (
-	"math"
-
 	"github.com/dave/jennifer/jen"
 	"github.com/dvaumoron/cornucopia/glu"
 	"go.starlark.net/starlark"
 )
-
-func convertToGoBuiltin(value starlark.Value) any {
-	switch casted := value.(type) {
-	case starlark.Bool:
-		return bool(casted)
-	case starlark.Int:
-		if res, ok := casted.Int64(); ok {
-			if math.MinInt <= res && res <= math.MaxInt {
-				return int(res)
-			}
-			return res
-		}
-	case starlark.Float:
-		return float64(casted)
-	case starlark.String:
-		return string(casted)
-	}
-	return nil
-}
 
 func convertToGoByte(value starlark.Value) byte {
 	if casted, ok := value.(starlark.Int); ok {
@@ -72,7 +51,7 @@ func convertToCode(value starlark.Value) jen.Code {
 	if casted, ok := value.(glu.Coder); ok {
 		return casted.Code()
 	}
-	return jen.Lit(convertToGoBuiltin(value))
+	return jen.Lit(glu.ConvertToGoBaseType(value))
 }
 
 func convertToCodeSlice(args starlark.Tuple) []jen.Code {

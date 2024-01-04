@@ -89,7 +89,7 @@ func wrappedLit(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kw
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
 		return nil, err
 	}
-	lit := jen.Lit(convertToGoBuiltin(value))
+	lit := jen.Lit(glu.ConvertToGoBaseType(value))
 	return glu.Wrapper{Inner: lit, WType: &jenStatementWrappedType}, nil
 }
 

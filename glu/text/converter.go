@@ -19,34 +19,14 @@
 package text_glu
 
 import (
-	"fmt"
-
+	"github.com/dvaumoron/cornucopia/glu"
 	"go.starlark.net/starlark"
 )
-
-func convertToString(value starlark.Value) string {
-	switch casted := value.(type) {
-	case starlark.Bool:
-		if casted {
-			return "true"
-		}
-		return "false"
-	case starlark.Int:
-		if res, ok := casted.Int64(); ok {
-			return fmt.Sprint(res)
-		}
-	case starlark.Float:
-		return fmt.Sprint(float64(casted))
-	case starlark.String:
-		return string(casted)
-	}
-	return ""
-}
 
 func convertToStringSlice(args starlark.Tuple) []string {
 	res := make([]string, 0, len(args))
 	for _, arg := range args {
-		res = append(res, convertToString(arg))
+		res = append(res, glu.ConvertToString(arg))
 	}
 	return res
 }

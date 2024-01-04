@@ -19,14 +19,18 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"os"
 
 	"github.com/dvaumoron/cornucopia/cmd"
 )
 
+//go:embed version.txt
+var version string
+
 func main() {
-	if err := cmd.Init().Execute(); err != nil {
+	if err := cmd.Init(version).Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

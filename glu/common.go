@@ -20,6 +20,10 @@ package glu
 
 import (
 	"errors"
+	"fmt"
+	"math"
+
+	"go.starlark.net/starlark"
 )
 
 var (
@@ -28,4 +32,42 @@ var (
 )
 
 // mutex not needed
-var GeneratedFilenames []string
+var GeneratedFileNames []string
+
+func ConvertToGoBaseType(value starlark.Value) any {
+	switch casted := value.(type) {
+	case starlark.Bool:
+		return bool(casted)
+	case starlark.Int:
+		if res, ok := casted.Int64(); ok {
+			if math.MinInt <= res && res <= math.MaxInt {
+				return int(res)
+			}
+			return res
+		}
+	case starlark.Float:
+		return float64(casted)
+	case starlark.String:
+		return string(casted)
+	}
+	return nil
+}
+
+func ConvertToString(value starlark.Value) string {
+	switch casted := value.(type) {
+	case starlark.Bool:
+		if casted {
+			return "true"
+		}
+		return "false"
+	case starlark.Int:
+		if res, ok := casted.Int64(); ok {
+			return fmt.Sprint(res)
+		}
+	case starlark.Float:
+		return fmt.Sprint(float64(casted))
+	case starlark.String:
+		return string(casted)
+	}
+	return ""
+}
