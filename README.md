@@ -22,9 +22,7 @@ I hope you will enjoy and share.
 
 ## Getting started
 
-In order to install Cornucopia (with the go langage already installed), you can use the command:
-
-    go install github.com/dvaumoron/cornucopia@latest
+Get the [last binary](releases) depending on your OS.
 
 Create a file test.crn in your current directory similar to :
 
