@@ -58,6 +58,11 @@ The Cornucopia load implementation try the following resolution to find a an ext
 - read from local repository path (environment variable `CORNUCOPIA_REPO_PATH`, default is `$HOME/.cornucopia/recipes`)
 - download from repository url (environment variable `CORNUCOPIA_REPO_URL`, default link to [Cornucopia Recipes](https://github.com/dvaumoron/cornucopiarecipes)) and write the content in local repository path
 
+Also :
+- 'NewTextFile()' return an object with 'Line(*args)' and 'Save(fileName)' methods.
+- 'SaveJsonFile(fileName, object)'
+- 'SaveYamlFile(fileName, object)'
+
 ## License
 
 The Cornucopia project is released under the Apache 2.0 license. See [LICENSE](LICENSE).
