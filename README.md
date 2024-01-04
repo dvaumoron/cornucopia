@@ -22,7 +22,7 @@ I hope you will enjoy and share.
 
 ## Getting started
 
-Get the [last binary](releases) depending on your OS.
+Get the [last binary](https://github.com/dvaumoron/cornucopia/releases) depending on your OS.
 
 Create a file test.crn in your current directory similar to :
 
