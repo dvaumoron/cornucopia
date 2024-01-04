@@ -60,9 +60,9 @@ The Cornucopia load implementation try the following resolution to find a an ext
 
 Also :
 
-- 'NewTextFile()' return an object with 'Line(*args)' and 'Save(fileName)' methods.
-- 'SaveJsonFile(fileName, object)'
-- 'SaveYamlFile(fileName, object)'
+- `NewTextFile()` return an object with `Line(*args)` and `Save(fileName)` methods.
+- `SaveJsonFile(fileName, object)`
+- `SaveYamlFile(fileName, object)`
 
 ## License
 
