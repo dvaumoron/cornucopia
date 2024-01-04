@@ -68,18 +68,28 @@ func saveMarshallFile(marshalFunc func(any) ([]byte, error), b *starlark.Builtin
 
 func convertToMarshal(value starlark.Value) any {
 	switch casted := value.(type) {
-	case starlark.Tuple:
-		res := make([]any, len(casted))
-		for _, elem := range casted {
-			res = append(res, convertToMarshal(elem))
-		}
-		return res
 	case *starlark.Dict:
 		res := make(map[string]any, casted.Len())
 		for _, item := range casted.Items() {
 			res[glu.ConvertToString(item[0])] = convertToMarshal(item[1])
 		}
 		return res
+	case starlark.Sequence:
+		return convertIterable(casted, casted.Len())
+	case starlark.Iterable:
+		return convertIterable(casted, 0)
 	}
 	return glu.ConvertToGoBaseType(value)
+}
+
+func convertIterable(iterable starlark.Iterable, size int) []any {
+	it := iterable.Iterate()
+	defer it.Done()
+
+	var elem starlark.Value
+	res := make([]any, 0, size)
+	for it.Next(&elem) {
+		res = append(res, convertToMarshal(elem))
+	}
+	return res
 }
