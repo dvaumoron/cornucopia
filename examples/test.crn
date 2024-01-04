@@ -104,3 +104,11 @@ marshalObject = {
 
 SaveJsonFile("test.json", marshalObject)
 SaveYamlFile("test.yaml", marshalObject)
+
+buildFile = NewTextFile()
+buildFile.Line("#!/usr/bin/env bash")
+buildFile.Line()
+buildFile.Line("git describe --tags --abbrev=", 0, " > version.txt")
+buildFile.Line("go install")
+buildFile.Line("rm version.txt")
+buildFile.Save("build.sh")
