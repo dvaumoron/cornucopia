@@ -1,6 +1,6 @@
 # Cornucopia
 
-<img src="https://github.com/dvaumoron/cornucopia/raw/main/logo/cornucopialogo.png" width="100">
+<img src="https://github.com/dvaumoron/cornucopia/raw/main/logo/cornucopialogo.png" width="100" alt="cornucopia logo">
 
 Cornucopia is a Go code generation tool with [shared scripts](https://github.com/dvaumoron/cornucopiarecipes) (gluing together [starlark-go](https://pkg.go.dev/go.starlark.net/starlark) and [jennifer](https://pkg.go.dev/github.com/dave/jennifer)). Basic text file and marshalling to [JSON](https://json.org/) or [YAML](https://yaml.org/) are also available.
 
@@ -59,6 +59,7 @@ The Cornucopia load implementation try the following resolution to find a an ext
 - download from repository url (environment variable `CORNUCOPIA_REPO_URL`, default link to [Cornucopia Recipes](https://github.com/dvaumoron/cornucopiarecipes)) and write the content in local repository path
 
 Also :
+
 - 'NewTextFile()' return an object with 'Line(*args)' and 'Save(fileName)' methods.
 - 'SaveJsonFile(fileName, object)'
 - 'SaveYamlFile(fileName, object)'
