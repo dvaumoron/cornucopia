@@ -57,12 +57,12 @@ func MakeWrappedType(name string, methods ...*starlark.Builtin) WrappedType {
 	return WrappedType{name: name, methods: methodsMap, methodNames: methodNames}
 }
 
-type Wrapper[T any] struct {
-	Inner T
+type Wrapper struct {
+	Inner any
 	WType *WrappedType
 }
 
-func (w Wrapper[T]) String() string {
+func (w Wrapper) String() string {
 	switch casted := any(w.Inner).(type) {
 	case renderer:
 		var buffer strings.Builder
@@ -75,34 +75,34 @@ func (w Wrapper[T]) String() string {
 	return ""
 }
 
-func (w Wrapper[T]) Type() string {
+func (w Wrapper) Type() string {
 	return w.WType.name
 }
 
-func (w Wrapper[T]) Freeze() {
+func (w Wrapper) Freeze() {
 	// No op
 }
 
-func (w Wrapper[T]) Truth() starlark.Bool {
+func (w Wrapper) Truth() starlark.Bool {
 	return starlark.True
 }
 
-func (w Wrapper[T]) Hash() (uint32, error) {
+func (w Wrapper) Hash() (uint32, error) {
 	return starlark.String(w.String()).Hash()
 }
 
-func (w Wrapper[T]) Attr(name string) (starlark.Value, error) {
+func (w Wrapper) Attr(name string) (starlark.Value, error) {
 	if m, ok := w.WType.methods[name]; ok {
 		return m.BindReceiver(w), nil
 	}
 	return nil, nil
 }
 
-func (w Wrapper[T]) AttrNames() []string {
+func (w Wrapper) AttrNames() []string {
 	return w.WType.methodNames
 }
 
-func (w Wrapper[T]) Code() jen.Code {
-	casted, _ := any(w.Inner).(jen.Code)
+func (w Wrapper) Code() jen.Code {
+	casted, _ := w.Inner.(jen.Code)
 	return casted
 }

@@ -16,16 +16,37 @@
  *
  */
 
-package glu
+package text_glu
 
 import (
-	"errors"
+	"fmt"
+
+	"go.starlark.net/starlark"
 )
 
-var (
-	ErrForbidAbsolute = errors.New("writing on an absolute path is forbidden")
-	ErrCast           = errors.New("not expected type")
-)
+func convertToString(value starlark.Value) string {
+	switch casted := value.(type) {
+	case starlark.Bool:
+		if casted {
+			return "true"
+		}
+		return "false"
+	case starlark.Int:
+		if res, ok := casted.Int64(); ok {
+			return fmt.Sprint(res)
+		}
+	case starlark.Float:
+		return fmt.Sprint(float64(casted))
+	case starlark.String:
+		return string(casted)
+	}
+	return ""
+}
 
-// mutex not needed
-var GeneratedFilenames []string
+func convertToStringSlice(args starlark.Tuple) []string {
+	res := make([]string, 0, len(args))
+	for _, arg := range args {
+		res = append(res, convertToString(arg))
+	}
+	return res
+}

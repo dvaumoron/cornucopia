@@ -37,8 +37,14 @@ func jenFile_HeaderComment(_ *starlark.Thread, b *starlark.Builtin, args starlar
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "comment", &comment); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.File])
-	recv.Inner.HeaderComment(comment)
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	file, ok := recv.Inner.(*jen.File)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	file.HeaderComment(comment)
 	return starlark.None, nil
 }
 
@@ -47,8 +53,14 @@ func jenFile_PackageComment(_ *starlark.Thread, b *starlark.Builtin, args starla
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "comment", &comment); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.File])
-	recv.Inner.PackageComment(comment)
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	file, ok := recv.Inner.(*jen.File)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	file.PackageComment(comment)
 	return starlark.None, nil
 }
 
@@ -57,14 +69,25 @@ func jenFile_Comment(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tupl
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "comment", &comment); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.File])
-	recv.Inner.Comment(comment)
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	file, ok := recv.Inner.(*jen.File)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	file.Comment(comment)
 	return starlark.None, nil
 }
 
 func jenFile_Anon(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(glu.Wrapper[*jen.File])
-	recv.Inner.Anon(convertToStringSlice(args)...)
+	recv, _ := b.Receiver().(glu.Wrapper)
+	file, ok := recv.Inner.(*jen.File)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	file.Anon(convertToStringSlice(args)...)
 	return starlark.None, nil
 }
 
@@ -74,8 +97,14 @@ func jenFile_ImportAlias(_ *starlark.Thread, b *starlark.Builtin, args starlark.
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "path", &path, "name", &alias); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.File])
-	recv.Inner.ImportAlias(path, alias)
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	file, ok := recv.Inner.(*jen.File)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	file.ImportAlias(path, alias)
 	return starlark.None, nil
 }
 
@@ -85,8 +114,14 @@ func jenFile_ImportName(_ *starlark.Thread, b *starlark.Builtin, args starlark.T
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "path", &path, "name", &name); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.File])
-	recv.Inner.ImportName(path, name)
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	file, ok := recv.Inner.(*jen.File)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	file.ImportName(path, name)
 	return starlark.None, nil
 }
 
@@ -95,14 +130,25 @@ func jenFile_ImportNames(_ *starlark.Thread, b *starlark.Builtin, args starlark.
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "names", &names); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.File])
-	recv.Inner.ImportNames(convertToMapString(names.Items()))
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	file, ok := recv.Inner.(*jen.File)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	file.ImportNames(convertToMapString(names.Items()))
 	return starlark.None, nil
 }
 
 func jenFile_Line(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(glu.Wrapper[*jen.File])
-	recv.Inner.Line()
+	recv, _ := b.Receiver().(glu.Wrapper)
+	file, ok := recv.Inner.(*jen.File)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	file.Line()
 	return starlark.None, nil
 }
 
@@ -121,8 +167,13 @@ func jenFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, 
 		return nil, err
 	}
 
-	recv := b.Receiver().(glu.Wrapper[*jen.File])
-	if err = recv.Inner.Save(filename); err != nil {
+	recv, _ := b.Receiver().(glu.Wrapper)
+	file, ok := recv.Inner.(*jen.File)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	if err = file.Save(filename); err != nil {
 		return nil, err
 	}
 
@@ -135,8 +186,14 @@ func jenStatement_Comment(_ *starlark.Thread, b *starlark.Builtin, args starlark
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "comment", &comment); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	recv.Inner.Comment(comment)
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	stmt.Comment(comment)
 	return starlark.None, nil
 }
 
@@ -146,9 +203,15 @@ func jenStatement_Complex(_ *starlark.Thread, b *starlark.Builtin, args starlark
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "m", &m, "key", &key); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	stmt := recv.Inner.Complex(convertToCode(m), convertToCode(key))
-	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	newStmt := stmt.Complex(convertToCode(m), convertToCode(key))
+	return glu.Wrapper{Inner: newStmt, WType: &jenStatementWrappedType}, nil
 }
 
 func jenStatement_Dot(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -156,9 +219,15 @@ func jenStatement_Dot(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tup
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "name", &name); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	stmt := recv.Inner.Dot(name)
-	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	newStmt := stmt.Dot(name)
+	return glu.Wrapper{Inner: newStmt, WType: &jenStatementWrappedType}, nil
 }
 
 func jenStatement_Id(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -166,9 +235,15 @@ func jenStatement_Id(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tupl
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "name", &name); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	stmt := recv.Inner.Id(name)
-	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	newStmt := stmt.Id(name)
+	return glu.Wrapper{Inner: newStmt, WType: &jenStatementWrappedType}, nil
 }
 
 func jenStatement_Lit(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -176,9 +251,15 @@ func jenStatement_Lit(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tup
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	lit := recv.Inner.Lit(convertToGoBuiltin(value))
-	return glu.Wrapper[*jen.Statement]{Inner: lit, WType: &jenStatementWrappedType}, nil
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	lit := stmt.Lit(convertToGoBuiltin(value))
+	return glu.Wrapper{Inner: lit, WType: &jenStatementWrappedType}, nil
 }
 
 func jenStatement_LitByte(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -186,9 +267,15 @@ func jenStatement_LitByte(_ *starlark.Thread, b *starlark.Builtin, args starlark
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	lit := recv.Inner.LitByte(convertToGoByte(value))
-	return glu.Wrapper[*jen.Statement]{Inner: lit, WType: &jenStatementWrappedType}, nil
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	lit := stmt.LitByte(convertToGoByte(value))
+	return glu.Wrapper{Inner: lit, WType: &jenStatementWrappedType}, nil
 }
 
 func jenStatement_LitRune(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -196,9 +283,15 @@ func jenStatement_LitRune(_ *starlark.Thread, b *starlark.Builtin, args starlark
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "value", &value); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	lit := recv.Inner.LitRune(convertToGoRune(value))
-	return glu.Wrapper[*jen.Statement]{Inner: lit, WType: &jenStatementWrappedType}, nil
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	lit := stmt.LitRune(convertToGoRune(value))
+	return glu.Wrapper{Inner: lit, WType: &jenStatementWrappedType}, nil
 }
 
 func jenStatement_Op(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -206,9 +299,15 @@ func jenStatement_Op(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tupl
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "op", &op); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	stmt := recv.Inner.Op(op)
-	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	newStmt := stmt.Op(op)
+	return glu.Wrapper{Inner: newStmt, WType: &jenStatementWrappedType}, nil
 }
 
 func jenStatement_Qual(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -217,19 +316,35 @@ func jenStatement_Qual(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tu
 	if err := starlark.UnpackArgs(b.Name(), args, kwargs, "path", &path, "name", &name); err != nil {
 		return nil, err
 	}
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	stmt := recv.Inner.Qual(path, name)
-	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
+
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	newStmt := stmt.Qual(path, name)
+	return glu.Wrapper{Inner: newStmt, WType: &jenStatementWrappedType}, nil
 }
 
 func jenStatement_Tag(_ *starlark.Thread, b *starlark.Builtin, _ starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	stmt := recv.Inner.Tag(convertToMapString(kwargs))
-	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	newStmt := stmt.Tag(convertToMapString(kwargs))
+	return glu.Wrapper{Inner: newStmt, WType: &jenStatementWrappedType}, nil
 }
 
 func jenStatement_Values(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(glu.Wrapper[*jen.Statement])
-	stmt := recv.Inner.Values(convertToDictOrCodeSlice(args)...)
-	return glu.Wrapper[*jen.Statement]{Inner: stmt, WType: &jenStatementWrappedType}, nil
+	recv, _ := b.Receiver().(glu.Wrapper)
+	stmt, ok := recv.Inner.(*jen.Statement)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	newStmt := stmt.Values(convertToDictOrCodeSlice(args)...)
+	return glu.Wrapper{Inner: newStmt, WType: &jenStatementWrappedType}, nil
 }

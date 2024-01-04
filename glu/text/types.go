@@ -19,8 +19,8 @@
 package text_glu
 
 import (
-	"bytes"
 	"path"
+	"strings"
 
 	"github.com/dvaumoron/cornucopia/common"
 	glu "github.com/dvaumoron/cornucopia/glu"
@@ -30,9 +30,16 @@ import (
 var textFileWrappedType = glu.MakeWrappedType("testFile", starlark.NewBuiltin("Line", textFile_Line), starlark.NewBuiltin("Save", textFile_Save))
 
 func textFile_Line(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple, _ []starlark.Tuple) (starlark.Value, error) {
-	recv := b.Receiver().(glu.Wrapper[*bytes.Buffer])
-	// TODO
-	recv.Inner.WriteByte('\n')
+	recv, _ := b.Receiver().(glu.Wrapper)
+	casted, ok := recv.Inner.(*strings.Builder)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	for _, s := range convertToStringSlice(args) {
+		casted.WriteString(s)
+	}
+	casted.WriteByte('\n')
 	return starlark.None, nil
 }
 
@@ -47,8 +54,13 @@ func textFile_Save(_ *starlark.Thread, b *starlark.Builtin, args starlark.Tuple,
 		return nil, glu.ErrForbidAbsolute
 	}
 
-	recv := b.Receiver().(glu.Wrapper[*bytes.Buffer])
-	if err = common.WriteFile(filename, recv.Inner.Bytes()); err != nil {
+	recv, _ := b.Receiver().(glu.Wrapper)
+	casted, ok := recv.Inner.(*strings.Builder)
+	if !ok {
+		return nil, glu.ErrCast
+	}
+
+	if err = common.WriteFile(filename, []byte(casted.String())); err != nil {
 		return nil, err
 	}
 

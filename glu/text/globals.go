@@ -19,7 +19,7 @@
 package text_glu
 
 import (
-	"bytes"
+	"strings"
 
 	"github.com/dvaumoron/cornucopia/glu"
 	"go.starlark.net/starlark"
@@ -35,6 +35,6 @@ func wrappedNewTextFile(_ *starlark.Thread, b *starlark.Builtin, args starlark.T
 		return nil, err
 	}
 
-	file := new(bytes.Buffer)
-	return glu.Wrapper[*bytes.Buffer]{Inner: file, WType: &textFileWrappedType}, nil
+	builder := new(strings.Builder)
+	return glu.Wrapper{Inner: builder, WType: &textFileWrappedType}, nil
 }

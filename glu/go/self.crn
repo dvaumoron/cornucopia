@@ -74,7 +74,7 @@ def newStarlarkBuiltinFunc(f, name, param, param2, param3, param4):
     ).Parens(List(Qual(STARLARK, "Value"), Error()))
 
 def returnWrappedStatement(value):
-    return Return(Qual(GLU, "Wrapper").Types(Op("*").Qual(JEN, "Statement")).Values({
+    return Return(Qual(GLU, "Wrapper").Values({
             Id("Inner"): value,
             Id("WType"): Op("&").Id("jenStatementWrappedType"),
     }), Nil())
@@ -101,6 +101,11 @@ CALL_UNPACK = If(
     Return(Nil(), Err()),
 )
 CONVERT_VALUE_TO_CODE = Id("convertToCode").Call(Id("value"))
+DECLARE_RECEIVER = List(Id("recv"), Id("_")).Op(":=").Id("b").Dot("Receiver").Call().Assert(Qual(GLU, "Wrapper"))
+TEST_CAST = If(Op("!").Id("ok")).Block(
+    Return(Nil(), Qual(GLU, "ErrCast")),
+)
+
 
 def oneargFunction(f, functionName):
     newStarlarkBuiltinFunc(f, "wrapped" + functionName, "_", "b", "args", "kwargs").Block(
@@ -110,26 +115,40 @@ def oneargFunction(f, functionName):
     f.Line()
 
 
-def assertReceiver(typeName, methodName):
-    return Id("b").Dot("Receiver").Call().Assert(Qual(GLU, "Wrapper").Types(Op("*").Qual(JEN, typeName))).Dot("Inner").Dot(methodName)
+def assertReceiver(typeName):
+    return [
+        DECLARE_RECEIVER,
+        List(Id("casted"), Id("ok")).Op(":=").Id("recv").Dot("Inner").Assert(Op("*").Qual(JEN, typeName)),
+        TEST_CAST,
+        Line(),
+    ]
+
+def declareRes(methodName):
+    return Id("res").Op(":=").Id("casted").Dot(methodName)
 
 def basicMethod(f, typeName, methodName):
-    newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "_", "_").Block(
-        returnWrappedStatement(assertReceiver(typeName, methodName).Call()),
-    )
+    instructions = assertReceiver(typeName)
+    instructions.append(declareRes(methodName).Call())
+    instructions.append(returnWrappedStatement(Id("res")))
+
+    newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "_", "_").Block(*instructions)
     f.Line()
 
 def varargsMethod(f, typeName, methodName):
-    newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "args", "_").Block(
-        returnWrappedStatement(assertReceiver(typeName, methodName).Call(CONVERT_ARGS_TO_CODE_SLICE)),
-    )
+    instructions = assertReceiver(typeName)
+    instructions.append(declareRes(methodName).Call(CONVERT_ARGS_TO_CODE_SLICE))
+    instructions.append(returnWrappedStatement(Id("res")))
+
+    newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "args", "_").Block(*instructions)
     f.Line()
 
 def oneargMethod(f, typeName, methodName):
-    newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "args", "kwargs").Block(
-        DECLARE_VALUE, CALL_UNPACK,
-        returnWrappedStatement(assertReceiver(typeName, methodName).Call(CONVERT_VALUE_TO_CODE)),
-    )
+    instructions = [DECLARE_VALUE, CALL_UNPACK, Line()]
+    instructions.extend(assertReceiver(typeName))
+    instructions.append(declareRes(methodName).Call(CONVERT_VALUE_TO_CODE))
+    instructions.append(returnWrappedStatement(Id("res")))
+
+    newStarlarkBuiltinFunc(f,"jen" + typeName +"_" + methodName, "_", "b", "args", "kwargs").Block(*instructions)
     f.Line()
 
 def registerType(name, methodNames):
