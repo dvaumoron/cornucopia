@@ -33,3 +33,11 @@ func wrappedNewTextFile(_ *starlark.Thread, b *starlark.Builtin, args starlark.T
 	builder := new(strings.Builder)
 	return glu.Wrapper{Inner: builder, WType: &textFileWrappedType}, nil
 }
+
+func convertToStringSlice(args starlark.Tuple) []string {
+	res := make([]string, 0, len(args))
+	for _, arg := range args {
+		res = append(res, glu.ConvertToString(arg))
+	}
+	return res
+}
