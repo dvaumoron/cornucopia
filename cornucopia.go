@@ -19,15 +19,14 @@
 package main
 
 import (
-	_ "embed"
 	"fmt"
 	"os"
 
 	"github.com/dvaumoron/cornucopia/cmd"
 )
 
-//go:embed version.txt
-var version string
+// can be overridden with ldflags
+var version = "dev"
 
 func main() {
 	if err := cmd.Init(version).Execute(); err != nil {
