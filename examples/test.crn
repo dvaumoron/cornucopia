@@ -94,3 +94,13 @@ ForeignKeyMethod(
 
 userFile.Save("model/user.go")
 messageFile.Save("model/message.go")
+
+marshalObject = {
+    "Title": "todo-list",
+    "User": "Me",
+    "Version": 1,
+    "todos": ["task1", "task2", "task3"],
+}
+
+SaveJsonFile("test.json", marshalObject)
+SaveYamlFile("test.yaml", marshalObject)
