@@ -46,7 +46,7 @@ func main() {
 
 You can change the Hello call to add a string argument and retry, see [hello.crn](https://github.com/dvaumoron/cornucopiarecipes/blob/main/hello.crn) to understand the "hidden" recipe.
 
-Other examples could be seen [here](examples) or [there](glu/go/self.crn) (used to generate part of Cornucopia internal boilerplate code)
+Other examples could be seen [here](https://github.com/dvaumoron/cornucopia/tree/main/examples) or [there](https://github.com/dvaumoron/cornucopia/blob/main/glu/go/self.crn) (used to generate part of Cornucopia internal boilerplate code)
 
 ## Language Reference
 
