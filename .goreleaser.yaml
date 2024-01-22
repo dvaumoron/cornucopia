@@ -19,27 +19,57 @@ builds:
       - linux
       - windows
       - darwin
+      - freebsd
+      - openbsd
+      - solaris
+
+    goarch:
+      - "386"
+      - amd64
+      - arm
+      - arm64
 
 release:
   name_template: "Release {{.Tag}}"
 
-archives:
-  - format: tar.gz
-    # this name template makes the OS and Arch compatible with the results of `uname`.
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
-    format_overrides:
-      - goos: windows
-        format: zip
-
 changelog:
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
+  use: github-native
+
+archives:
+  - format: zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{- .Os }}_{{- .Arch }}"
+
+nfpms:
+  - file_name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}'
+    maintainer: 'https://github.com/dvaumoron'
+    homepage: https://github.com/dvaumoron/cornucopia
+    description: >-
+      Cornucopia is a Go code generation tool with shared scripts. Basic text file and marshalling to JSON or YAML are also available.
+    license: "Apache-2.0"
+    formats:
+      - deb
+      - rpm
+      - apk
+    bindir: /usr/bin
+    section: default
+    contents:
+      - src: ./LICENSE
+        dst: /usr/share/doc/cornucopia/copyright
+        file_info:
+          mode: 0444
+    rpm:
+      signature:
+        key_file: "{{ if index .Env \"GPG_KEY_FILE\"  }}{{.Env.GPG_KEY_FILE}}{{ end }}"
+    deb:
+      signature:
+        key_file: "{{ if index .Env \"GPG_KEY_FILE\"  }}{{.Env.GPG_KEY_FILE}}{{ end }}"
+
+brews:
+  - repository:
+      owner: dvaumoron
+      name: homebrew-tap
+    folder: Formula
+    homepage: https://github.com/dvaumoron/cornucopia
+    description: Go code generation tool
+    license: "Apache-2.0"
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
