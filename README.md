@@ -22,7 +22,14 @@ I hope you will enjoy and share.
 
 ## Getting started
 
-Get the [last binary](https://github.com/dvaumoron/cornucopia/releases) depending on your OS.
+Install via [Homebrew](https://brew.sh/)
+
+```console
+$ brew tap dvaumoron/tap
+$ brew install cornucopia
+```
+
+Or get the [last binary](https://github.com/dvaumoron/cornucopia/releases) depending on your OS.
 
 Create a file test.crn in your current directory similar to :
 
