@@ -112,3 +112,14 @@ buildFile.Line("git describe --tags --abbrev=", 0, " > version.txt")
 buildFile.Line("go install")
 buildFile.Line("rm version.txt")
 buildFile.Save("build.sh")
+
+load("dvaumoron/xml.crn", "CreateTag", "SaveFile", "XmlTag")
+
+data = CreateTag("data")
+
+SaveFile("test.xml", XmlTag("datas", {},
+    data({"id": "1"},
+        XmlTag("value", {}, ["du blabla"])
+    ),
+    data({"id": "2"})
+))
