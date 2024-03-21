@@ -114,9 +114,9 @@ buildFile.Line("rm version.txt")
 buildFile.Save("build.sh")
 
 load("dvaumoron/main.crn", "SaveFileLines")
-load("dvaumoron/xml.crn", "CreateTag", "XmlTag")
+load("dvaumoron/xml.crn", "XmlTag", "XmlTagBuilder")
 
-data = CreateTag("data")
+data = XmlTagBuilder("data")
 
 SaveFileLines("test.xml", XmlTag("datas", {},
     data({"id": "1"},
