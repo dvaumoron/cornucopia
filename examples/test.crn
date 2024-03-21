@@ -113,11 +113,12 @@ buildFile.Line("go install")
 buildFile.Line("rm version.txt")
 buildFile.Save("build.sh")
 
-load("dvaumoron/xml.crn", "CreateTag", "SaveFile", "XmlTag")
+load("dvaumoron/main.crn", "SaveFileLines")
+load("dvaumoron/xml.crn", "CreateTag", "XmlTag")
 
 data = CreateTag("data")
 
-SaveFile("test.xml", XmlTag("datas", {},
+SaveFileLines("test.xml", XmlTag("datas", {},
     data({"id": "1"},
         XmlTag("value", {}, ["du blabla"])
     ),
