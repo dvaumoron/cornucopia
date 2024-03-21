@@ -18,7 +18,7 @@ load("hello.crn", "Hello")
 
 Hello()
 
-load("dvaumoron/sql.crn", "ConstDurationSec", "DeclareDBInterfaces", "CRUD", "BuildConvTypeDesc", "AUTO_KEY", "SelectQueryFunc", "ForeignKeyMethod")
+load("dvaumoron/sql.crn", "ConstDurationSec", "DeclareDBInterfaces", "CRUD", "BuildTypeDesc", "AUTO_KEY", "SelectQueryFunc", "ForeignKeyMethod")
 
 def newModelFile():
     f = NewFile("model")
@@ -36,7 +36,7 @@ commonFile.Save("model/common.go")
 
 userFile = newModelFile()
 
-userDesc = BuildConvTypeDesc("User", {
+userDesc = BuildTypeDesc("User", {
     "Login": String(),
     "Firstname": String(),
     "Lastname": String(),
@@ -52,7 +52,7 @@ userType, userBuilder = CRUD(
 
 userFile.Line()
 
-messageDesc = BuildConvTypeDesc("Message", {
+messageDesc = BuildTypeDesc("Message", {
     "Id": Int64(),
     "UserLogin": String(),
     "Content": String(),
